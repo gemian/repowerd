@@ -196,7 +196,7 @@ void repowerd::EventLoop::watch_fd(
     auto const ctx = new GSourceFdContext{callback};
     g_source_set_callback(
             gsource,
-            reinterpret_cast<GSourceFunc>(&GSourceFdContext::static_call),
+            G_SOURCE_FUNC(&GSourceFdContext::static_call),
             ctx,
             reinterpret_cast<GDestroyNotify>(&GSourceFdContext::static_destroy));
 
