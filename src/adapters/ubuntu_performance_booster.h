@@ -20,8 +20,7 @@
 
 #include "src/core/performance_booster.h"
 
-//#include <ubuntu/hardware/booster.h>
-typedef void UHardwareBooster;
+#include <ubuntu/hardware/booster.h>
 
 #include <memory>
 
@@ -42,12 +41,6 @@ public:
 private:
     std::shared_ptr<Log> const log;
     std::unique_ptr<UHardwareBooster,void(*)(UHardwareBooster*)> booster;
-
-    void *u_hardware_booster_new();
-
-    void u_hardware_booster_enable_scenario(void *pVoid, int i);
-
-    void u_hardware_booster_disable_scenario(void *pVoid, int i);
 };
 
 }
