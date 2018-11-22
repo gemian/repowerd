@@ -15,7 +15,7 @@ Build-Depends: debhelper (>= 9),
                libxext-dev (>= 1:1.0.0),
                libhardware-dev,
                libubuntu-application-api-dev,
-               libubuntu-platform-hardware-api-dev
+               libubuntu-platform-hardware-api-dev,
                pkg-config
 Standards-Version: 3.9.7
 Homepage: https://github.com/gemian/repowerd
