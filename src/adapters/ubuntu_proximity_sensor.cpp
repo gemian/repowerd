@@ -246,25 +246,3 @@ bool repowerd::UbuntuProximitySensor::should_invoke_handler()
 
     return false;
 }
-
-void* repowerd::UbuntuProximitySensor::ua_sensors_proximity_new() {
-    return nullptr;
-}
-
-void repowerd::UbuntuProximitySensor::ua_sensors_proximity_enable(void *const) {
-
-}
-
-int repowerd::UbuntuProximitySensor::uas_proximity_event_get_distance(void *) {
-    return 0;
-}
-
-void repowerd::UbuntuProximitySensor::ua_sensors_proximity_disable(void *const) {
-
-}
-
-void repowerd::UbuntuProximitySensor::ua_sensors_proximity_set_reading_cb(void *const,
-                                                                          void (*)(void *, void *),
-                                                                          UbuntuProximitySensor *) {
-
-}

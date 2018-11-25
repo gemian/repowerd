@@ -26,9 +26,7 @@
 #include <condition_variable>
 #include <vector>
 
-//#include <ubuntu/application/sensors/proximity.h>
-typedef void UASProximityEvent;
-typedef void UASensorsProximity;
+#include <ubuntu/application/sensors/proximity.h>
 
 namespace repowerd
 {
@@ -81,17 +79,6 @@ private:
     std::condition_variable state_cv;
     bool is_state_valid;
     ProximityState state;
-
-    void *ua_sensors_proximity_new();
-
-    void ua_sensors_proximity_enable(void *const pVoid);
-
-    static int uas_proximity_event_get_distance(void *pVoid);
-
-    void ua_sensors_proximity_disable(void *const pVoid);
-
-    void ua_sensors_proximity_set_reading_cb(void *const pVoid, void (*callback)(void *, void *),
-                                             UbuntuProximitySensor *pSensor);
 };
 
 }
