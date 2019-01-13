@@ -40,10 +40,12 @@ void repowerd::OfonoCallControl::hang_up_and_accept_call() {
 
     log->log(log_tag, "hang up and accept call");
 
-    auto m = g_dbus_message_new_method_call(dbus_telephony_approver_name,
-                                            dbus_telephony_approver_path,
-                                            dbus_telephony_approver_interface,
-                                            dbus_telephony_approver_message);
-    g_dbus_connection_send_message(dbus_connection, m, G_DBUS_SEND_MESSAGE_FLAGS_NONE, nullptr, nullptr);
-    g_object_unref(m);
+    g_dbus_connection_emit_signal(
+            dbus_connection,
+            dbus_telephony_approver_name,
+            dbus_telephony_approver_path,
+            dbus_telephony_approver_interface,
+            dbus_telephony_approver_message,
+            nullptr,
+            nullptr);
 }
