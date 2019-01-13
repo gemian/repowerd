@@ -23,29 +23,27 @@
 
 namespace {
     char const *const log_tag = "OfonoCallControl";
-    char const *const dbus_telephony_approver_name = "com.canonical.TelephonyServiceApprover";
+    char const *const dbus_telephony_approver_name = "com.canonical.Approver";
+    char const *const dbus_telephony_approver_path = "/com/canonical/Approver";
     char const *const dbus_telephony_approver_interface = "com.canonical.TelephonyServiceApprover";
+    char const *const dbus_telephony_approver_message = "HangUpAndAcceptCall";
 }
 
 repowerd::OfonoCallControl::OfonoCallControl(
-        std::shared_ptr<Log> const& log,
-        std::string const& dbus_bus_address)
+        std::shared_ptr<Log> const &log,
+        std::string const &dbus_bus_address)
         : log{log},
-          dbus_connection{dbus_bus_address}
-{
+          dbus_connection{dbus_bus_address} {
 }
 
 void repowerd::OfonoCallControl::hang_up_and_accept_call() {
 
     log->log(log_tag, "hang up and accept call");
 
-    g_dbus_connection_emit_signal(
-                dbus_connection,
-                nullptr,
-                dbus_telephony_approver_name,
-                dbus_telephony_approver_interface,
-                "HangUpAndAcceptCall",
-                nullptr,
-                nullptr);
-
+    auto m = g_dbus_message_new_method_call(dbus_telephony_approver_name,
+                                            dbus_telephony_approver_path,
+                                            dbus_telephony_approver_interface,
+                                            dbus_telephony_approver_message);
+    g_dbus_connection_send_message(dbus_connection, m, G_DBUS_SEND_MESSAGE_FLAGS_NONE, nullptr, nullptr);
+    g_object_unref(m);
 }
