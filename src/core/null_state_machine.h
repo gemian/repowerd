@@ -30,6 +30,7 @@ public:
 
     void handle_active_call() override {}
     void handle_no_active_call() override {}
+    void handle_update_call_state(OfonoCallState) override {};
 
     void handle_enable_inactivity_timeout() override {}
     void handle_disable_inactivity_timeout() override {}
@@ -50,6 +51,9 @@ public:
 
     void handle_power_button_press(PowerButtonState) override {}
     void handle_power_button_release() override {}
+
+    void handle_silver_button_press() override {}
+    void handle_silver_button_release() override {}
 
     void handle_power_source_change() override {}
     void handle_power_source_critical() override {}

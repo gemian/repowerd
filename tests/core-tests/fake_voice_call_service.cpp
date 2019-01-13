@@ -66,3 +66,21 @@ void rt::FakeVoiceCallService::emit_no_active_call()
 {
     no_active_call_handler();
 }
+
+repowerd::HandlerRegistration rt::FakeVoiceCallService::register_update_call_state_handler(
+        UpdateCallStateHandler const& handler)
+{
+    mock.register_update_call_state_handler(handler);
+    update_call_state_handler = handler;
+    return HandlerRegistration{
+            [this]
+            {
+                mock.unregister_update_call_state_handler();
+                update_call_state_handler = [](auto){};
+            }};
+}
+
+void rt::FakeVoiceCallService::emit_update_call_state(OfonoCallState state)
+{
+    update_call_state_handler(state);
+}

@@ -26,6 +26,7 @@
 #include "notification_service.h"
 #include "null_state_machine.h"
 #include "power_button.h"
+#include "silver_button.h"
 #include "power_source.h"
 #include "proximity_sensor.h"
 #include "session_tracker.h"
@@ -35,6 +36,7 @@
 #include "timer.h"
 #include "user_activity.h"
 #include "voice_call_service.h"
+#include "call_control.h"
 
 #include "src/core/log.h"
 #include "src/core/exec.h"
@@ -61,6 +63,7 @@ repowerd::Daemon::Daemon(DaemonConfig& config)
       lock{config.the_lock()},
       notification_service{config.the_notification_service()},
       power_button{config.the_power_button()},
+      silver_button{config.the_silver_button()},
       power_source{config.the_power_source()},
       proximity_sensor{config.the_proximity_sensor()},
       session_tracker{config.the_session_tracker()},
@@ -244,6 +247,14 @@ repowerd::Daemon::register_event_handlers()
             }));
 
     registrations.push_back(
+        voice_call_service->register_update_call_state_handler(
+            [this] (OfonoCallState state)
+            {
+                enqueue_action_to_active_session(
+                    [this,state] (Session* s) { s->state_machine->handle_update_call_state(state); });
+            }));
+
+    registrations.push_back(
         client_requests->register_set_normal_brightness_value_handler(
             [this] (double value, pid_t pid)
             {
@@ -352,6 +363,21 @@ repowerd::Daemon::register_event_handlers()
                 {
                     enqueue_action_to_active_session(
                         [this] (Session* s) { s->state_machine->handle_lid_open(); });
+                }
+            }));
+
+    registrations.push_back(
+        silver_button->register_silver_button_handler(
+            [this] (SilverButtonState state)
+            {
+                if (state == SilverButtonState::released) {
+                    enqueue_action_to_active_session(
+                        [this] (Session *s) { s->state_machine->handle_silver_button_release(); });
+                }
+                else
+                {
+                    enqueue_action_to_active_session(
+                        [this] (Session* s) { s->state_machine->handle_silver_button_press(); });
                 }
             }));
 

@@ -26,6 +26,7 @@ add_executable(
     fake_lock.cpp
     fake_notification_service.cpp
     fake_power_button.cpp
+    fake_silver_button.cpp
     fake_power_source.cpp
     fake_proximity_sensor.cpp
     fake_session_tracker.cpp

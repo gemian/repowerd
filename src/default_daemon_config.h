@@ -35,6 +35,7 @@ class OfonoVoiceCallService;
 class TemporarySuspendInhibition;
 class UnityScreenService;
 class UnityPowerButton;
+class GemianSilverButton;
 class UnityDisplay;
 class X11Display;
 class X11Lock;
@@ -58,6 +59,7 @@ public:
     std::shared_ptr<NotificationService> the_notification_service() override;
     std::shared_ptr<PerformanceBooster> the_performance_booster() override;
     std::shared_ptr<PowerButton> the_power_button() override;
+    std::shared_ptr<SilverButton> the_silver_button() override;
     std::shared_ptr<PowerButtonEventSink> the_power_button_event_sink() override;
     std::shared_ptr<PowerSource> the_power_source() override;
     std::shared_ptr<ProximitySensor> the_proximity_sensor() override;
@@ -68,6 +70,7 @@ public:
     std::shared_ptr<Timer> the_timer() override;
     std::shared_ptr<UserActivity> the_user_activity() override;
     std::shared_ptr<VoiceCallService> the_voice_call_service() override;
+    std::shared_ptr<CallControl> the_call_control() override;
 
     std::shared_ptr<Backlight> the_backlight();
     std::shared_ptr<BacklightBrightnessControl> the_backlight_brightness_control();
@@ -85,6 +88,7 @@ public:
     std::shared_ptr<X11Lock> the_x11_lock();
     std::shared_ptr<UnityScreenService> the_unity_screen_service();
     std::shared_ptr<UnityPowerButton> the_unity_power_button();
+    std::shared_ptr<GemianSilverButton> the_gemian_silver_button();
     std::shared_ptr<UPowerPowerSourceAndLid> the_upower_power_source_and_lid();
     std::shared_ptr<WakeupService> the_wakeup_service();
 
@@ -93,6 +97,7 @@ private:
     std::shared_ptr<Backlight> backlight;
     std::shared_ptr<BacklightBrightnessControl> backlight_brightness_control;
     std::shared_ptr<BrightnessControl> brightness_control;
+    std::shared_ptr<CallControl> call_control;
     std::shared_ptr<BrightnessNotification> brightness_notification;
     std::shared_ptr<Chrono> chrono;
     std::shared_ptr<ClientSettings> client_settings;
@@ -116,6 +121,7 @@ private:
     std::shared_ptr<X11Display> x11_display;
     std::shared_ptr<X11Lock> x11_lock;
     std::shared_ptr<UnityPowerButton> unity_power_button;
+    std::shared_ptr<GemianSilverButton> gemian_silver_button;
     std::shared_ptr<UnityScreenService> unity_screen_service;
     std::shared_ptr<UPowerPowerSourceAndLid> upower_power_source_and_lid;
     std::shared_ptr<UserActivity> user_activity;

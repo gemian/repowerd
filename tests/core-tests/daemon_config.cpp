@@ -33,6 +33,7 @@
 #include "fake_notification_service.h"
 #include "mock_performance_booster.h"
 #include "fake_power_button.h"
+#include "fake_silver_button.h"
 #include "mock_power_button_event_sink.h"
 #include "fake_power_source.h"
 #include "fake_proximity_sensor.h"
@@ -42,6 +43,7 @@
 #include "fake_timer.h"
 #include "fake_user_activity.h"
 #include "fake_voice_call_service.h"
+#include "mock_call_control.h"
 
 namespace rt = repowerd::test;
 using testing::NiceMock;
@@ -116,6 +118,11 @@ std::shared_ptr<repowerd::PowerButton> rt::DaemonConfig::the_power_button()
     return the_fake_power_button();
 }
 
+std::shared_ptr<repowerd::SilverButton> rt::DaemonConfig::the_silver_button()
+{
+    return the_fake_silver_button();
+}
+
 std::shared_ptr<repowerd::PowerButtonEventSink> rt::DaemonConfig::the_power_button_event_sink()
 {
     return the_mock_power_button_event_sink();
@@ -168,6 +175,11 @@ std::shared_ptr<repowerd::UserActivity> rt::DaemonConfig::the_user_activity()
 std::shared_ptr<repowerd::VoiceCallService> rt::DaemonConfig::the_voice_call_service()
 {
     return the_fake_voice_call_service();
+}
+
+std::shared_ptr<repowerd::CallControl> rt::DaemonConfig::the_call_control()
+{
+    return the_mock_call_control();
 }
 
 std::shared_ptr<rt::FakeDisplayInformation> rt::DaemonConfig::the_fake_display_information()
@@ -279,12 +291,28 @@ rt::DaemonConfig::the_mock_performance_booster()
     return mock_performance_booster;
 }
 
+std::shared_ptr<NiceMock<rt::MockCallControl>> rt::DaemonConfig::the_mock_call_control()
+{
+    if (!mock_call_control)
+        mock_call_control = std::make_shared<NiceMock<rt::MockCallControl>>();
+
+    return mock_call_control;
+}
+
 std::shared_ptr<rt::FakePowerButton> rt::DaemonConfig::the_fake_power_button()
 {
     if (!fake_power_button)
         fake_power_button = std::make_shared<rt::FakePowerButton>();
 
     return fake_power_button;
+}
+
+std::shared_ptr<rt::FakeSilverButton> rt::DaemonConfig::the_fake_silver_button()
+{
+    if (!fake_silver_button)
+        fake_silver_button = std::make_shared<rt::FakeSilverButton>();
+
+    return fake_silver_button;
 }
 
 std::shared_ptr<NiceMock<rt::MockPowerButtonEventSink>>

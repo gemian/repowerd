@@ -63,6 +63,7 @@ struct MockStateMachine : public repowerd::StateMachine
 
     MOCK_METHOD0(handle_active_call, void());
     MOCK_METHOD0(handle_no_active_call, void());
+    MOCK_METHOD1(handle_update_call_state, void(repowerd::OfonoCallState));
 
     MOCK_METHOD0(handle_no_notification, void());
     MOCK_METHOD0(handle_notification, void());
@@ -78,6 +79,9 @@ struct MockStateMachine : public repowerd::StateMachine
 
     MOCK_METHOD1(handle_power_button_press, void(repowerd::PowerButtonState));
     MOCK_METHOD0(handle_power_button_release, void());
+
+    MOCK_METHOD0(handle_silver_button_press, void());
+    MOCK_METHOD0(handle_silver_button_release, void());
 
     MOCK_METHOD0(handle_power_source_change, void());
     MOCK_METHOD0(handle_power_source_critical, void());

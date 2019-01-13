@@ -41,6 +41,7 @@ class MockModemPowerControl;
 class FakeNotificationService;
 class MockPerformanceBooster;
 class FakePowerButton;
+class FakeSilverButton;
 class MockPowerButtonEventSink;
 class FakePowerSource;
 class FakeProximitySensor;
@@ -49,6 +50,7 @@ class FakeSystemPowerControl;
 class FakeTimer;
 class FakeUserActivity;
 class FakeVoiceCallService;
+class MockCallControl;
 
 class DaemonConfig : public repowerd::DaemonConfig
 {
@@ -68,6 +70,7 @@ public:
     std::shared_ptr<PerformanceBooster> the_performance_booster() override;
     std::shared_ptr<PowerButton> the_power_button() override;
     std::shared_ptr<PowerButtonEventSink> the_power_button_event_sink() override;
+    std::shared_ptr<SilverButton> the_silver_button() override;
     std::shared_ptr<PowerSource> the_power_source() override;
     std::shared_ptr<ProximitySensor> the_proximity_sensor() override;
     std::shared_ptr<SessionTracker> the_session_tracker() override;
@@ -77,6 +80,7 @@ public:
     std::shared_ptr<Timer> the_timer() override;
     std::shared_ptr<UserActivity> the_user_activity() override;
     std::shared_ptr<VoiceCallService> the_voice_call_service() override;
+    std::shared_ptr<CallControl> the_call_control() override;
 
     std::shared_ptr<FakeDisplayInformation> the_fake_display_information();
     std::shared_ptr<testing::NiceMock<MockBrightnessControl>> the_mock_brightness_control();
@@ -92,6 +96,7 @@ public:
     std::shared_ptr<FakeNotificationService> the_fake_notification_service();
     std::shared_ptr<testing::NiceMock<MockPerformanceBooster>> the_mock_performance_booster();
     std::shared_ptr<FakePowerButton> the_fake_power_button();
+    std::shared_ptr<FakeSilverButton> the_fake_silver_button();
     std::shared_ptr<testing::NiceMock<MockPowerButtonEventSink>> the_mock_power_button_event_sink();
     std::shared_ptr<FakePowerSource> the_fake_power_source();
     std::shared_ptr<FakeProximitySensor> the_fake_proximity_sensor();
@@ -100,6 +105,7 @@ public:
     std::shared_ptr<FakeTimer> the_fake_timer();
     std::shared_ptr<FakeUserActivity> the_fake_user_activity();
     std::shared_ptr<FakeVoiceCallService> the_fake_voice_call_service();
+    std::shared_ptr<testing::NiceMock<MockCallControl>> the_mock_call_control();
 
 private:
     std::shared_ptr<StateMachineFactory> state_machine_factory;
@@ -119,6 +125,7 @@ private:
     std::shared_ptr<FakeNotificationService> fake_notification_service;
     std::shared_ptr<testing::NiceMock<MockPerformanceBooster>> mock_performance_booster;
     std::shared_ptr<FakePowerButton> fake_power_button;
+    std::shared_ptr<FakeSilverButton> fake_silver_button;
     std::shared_ptr<testing::NiceMock<MockPowerButtonEventSink>> mock_power_button_event_sink;
     std::shared_ptr<FakePowerSource> fake_power_source;
     std::shared_ptr<FakeProximitySensor> fake_proximity_sensor;
@@ -127,6 +134,7 @@ private:
     std::shared_ptr<FakeTimer> fake_timer;
     std::shared_ptr<FakeUserActivity> fake_user_activity;
     std::shared_ptr<FakeVoiceCallService> fake_voice_call_service;
+    std::shared_ptr<testing::NiceMock<MockCallControl>> mock_call_control;
 };
 
 }

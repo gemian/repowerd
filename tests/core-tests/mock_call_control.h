@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Canonical Ltd.
+ * Copyright © 2019 Gemian
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3,
@@ -13,24 +13,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authored by: Alexandros Frantzis <alexandros.frantzis@canonical.com>
+ * Authored by: Adam Boardman
  */
 
 #pragma once
 
+#include "src/core/call_control.h"
+
+#include <gmock/gmock.h>
+
 namespace repowerd
 {
+    namespace test
+    {
 
-enum class DisplayPowerChangeReason
-{
-    unknown,
-    power_button,
-    silver_button,
-    activity,
-    proximity,
-    notification,
-    call,
-    call_done
-};
+        class MockCallControl : public CallControl
+        {
+        public:
+            MOCK_METHOD0(hang_up_and_accept_call, void());
+        };
 
+    }
 }

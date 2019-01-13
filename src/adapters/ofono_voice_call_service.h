@@ -33,16 +33,6 @@ namespace repowerd
 
 class Log;
 
-enum class OfonoCallState {
-    invalid,
-    active,
-    alerting,
-    dialing,
-    disconnected,
-    held,
-    incoming,
-    waiting};
-
 class OfonoVoiceCallService : public VoiceCallService, public ModemPowerControl
 {
 public:
@@ -56,6 +46,8 @@ public:
         ActiveCallHandler const& handler) override;
     HandlerRegistration register_no_active_call_handler(
         NoActiveCallHandler const& handler) override;
+    HandlerRegistration register_update_call_state_handler(
+        UpdateCallStateHandler const& handler) override;
 
     void set_low_power_mode() override;
     void set_normal_power_mode() override;
@@ -92,6 +84,7 @@ private:
 
     ActiveCallHandler active_call_handler;
     NoActiveCallHandler no_active_call_handler;
+    UpdateCallStateHandler update_call_state_handler;
     std::unordered_map<std::string,OfonoCallState> calls;
     std::unordered_set<std::string> modems;
 };
