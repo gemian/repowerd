@@ -627,6 +627,8 @@ std::vector<std::string> repowerd::Daemon::sessions_for_pid(pid_t pid)
 
 void repowerd::Daemon::add_session_with_active_call(Session* session)
 {
+    the_log->log(log_tag, "add_session_with_active_call - size:%lu", sessions_with_active_calls.size());
+
     auto const iter = std::find_if(sessions.begin(), sessions.end(),
         [&] (auto const& kv)
         {

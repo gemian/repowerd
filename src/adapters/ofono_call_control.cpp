@@ -23,10 +23,6 @@
 
 namespace {
     char const *const log_tag = "OfonoCallControl";
-    char const *const dbus_telephony_approver_name = "com.canonical.Approver";
-    char const *const dbus_telephony_approver_path = "/com/canonical/Approver";
-    char const *const dbus_telephony_approver_interface = "com.canonical.TelephonyServiceApprover";
-    char const *const dbus_telephony_approver_message = "HangUpAndAcceptCall";
 }
 
 repowerd::OfonoCallControl::OfonoCallControl(
@@ -37,15 +33,7 @@ repowerd::OfonoCallControl::OfonoCallControl(
 }
 
 void repowerd::OfonoCallControl::hang_up_and_accept_call() {
-
     log->log(log_tag, "hang up and accept call");
 
-    g_dbus_connection_emit_signal(
-            dbus_connection,
-            dbus_telephony_approver_name,
-            dbus_telephony_approver_path,
-            dbus_telephony_approver_interface,
-            dbus_telephony_approver_message,
-            nullptr,
-            nullptr);
+    //This needs to happen on the session bus, for now gemian-lock does this directly
 }
