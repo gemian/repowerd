@@ -66,6 +66,8 @@ repowerd::Daemon::Daemon(DaemonConfig& config)
       notification_service{config.the_notification_service()},
       power_button{config.the_power_button()},
       silver_button{config.the_silver_button()},
+      audio_headphone_cs{config.the_audio_headphone_cs()},
+      audio_keep_alive{config.the_audio_keep_alive()},
       power_source{config.the_power_source()},
       proximity_sensor{config.the_proximity_sensor()},
       session_tracker{config.the_session_tracker()},
