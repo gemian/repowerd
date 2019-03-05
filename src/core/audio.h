@@ -25,22 +25,26 @@
 namespace repowerd
 {
     enum class AudioKeepAliveState{idle, active};
+    enum class AudioHeadphoneCSState{left, right};
     using AudioKeepAliveHandler = std::function<void(AudioKeepAliveState)>;
+    using AudioHeadphoneCSHandler = std::function<void(AudioHeadphoneCSState)>;
 
-    class AudioKeepAlive
+    class Audio
     {
     public:
-        virtual ~AudioKeepAlive() = default;
+        virtual ~Audio() = default;
 
         virtual void start_processing() = 0;
 
         virtual HandlerRegistration register_audio_keep_alive_handler(
                 AudioKeepAliveHandler const& handler) = 0;
+        virtual HandlerRegistration register_audio_headphone_cs_handler(
+                AudioHeadphoneCSHandler const& handler) = 0;
 
     protected:
-        AudioKeepAlive() = default;
-        AudioKeepAlive (AudioKeepAlive const&) = default;
-        AudioKeepAlive& operator=(AudioKeepAlive const&) = default;
+        Audio() = default;
+        Audio (Audio const&) = default;
+        Audio& operator=(Audio const&) = default;
     };
 
 }

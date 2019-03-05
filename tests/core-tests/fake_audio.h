@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "src/core/audio_keep_alive.h"
+#include "src/core/audio.h"
 
 #include <gmock/gmock.h>
 
@@ -27,26 +27,33 @@ namespace repowerd
     namespace test
     {
 
-        class FakeAudioKeepAlive : public AudioKeepAlive
+        class FakeAudio : public Audio
         {
         public:
             void start_processing() override;
 
+            HandlerRegistration register_audio_headphone_cs_handler(AudioHeadphoneCSHandler const& handler) override;
             HandlerRegistration register_audio_keep_alive_handler(AudioKeepAliveHandler const& handler) override;
 
             void idle();
             void active();
 
+            void leftUp();
+            void rightUp();
+
             struct Mock
             {
                 MOCK_METHOD0(start_processing, void());
+                MOCK_METHOD1(register_audio_headphone_cs_handler, void(AudioHeadphoneCSHandler const&));
+                MOCK_METHOD0(unregister_audio_headphone_cs_handler, void());
                 MOCK_METHOD1(register_audio_keep_alive_handler, void(AudioKeepAliveHandler const&));
                 MOCK_METHOD0(unregister_audio_keep_alive_handler, void());
             };
             testing::NiceMock<Mock> mock;
 
         private:
-            AudioKeepAliveHandler handler;
+            AudioKeepAliveHandler keep_alive_handler;
+            AudioHeadphoneCSHandler headphone_cs_handler;
         };
 
     }

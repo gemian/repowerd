@@ -48,7 +48,7 @@ public:
         SetLidBehaviorHandler const& handler) override;
 
     HandlerRegistration register_set_critical_power_behavior_handler(
-        SetCriticalPowerBehaviorHandler const& handler) override;
+            SetCriticalPowerBehaviorHandler const& handler) override;
 
 private:
     void dbus_method_call(

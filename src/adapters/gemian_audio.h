@@ -18,40 +18,56 @@
 
 #pragma once
 
-#include "src/core/audio_keep_alive.h"
+#include "src/core/audio.h"
 
 #include "dbus_connection_handle.h"
 #include "dbus_event_loop.h"
 
 namespace repowerd
 {
+    class Log;
 
-    class GemianAudioKeepAlive : public AudioKeepAlive
+    class GemianAudio : public Audio
     {
     public:
-        GemianAudioKeepAlive(std::string const& dbus_bus_address);
+        GemianAudio(std::shared_ptr<Log> const& log,
+                std::string const& dbus_bus_address);
 
         void start_processing() override;
 
+        HandlerRegistration register_audio_headphone_cs_handler(
+                AudioHeadphoneCSHandler const& handler) override;
         HandlerRegistration register_audio_keep_alive_handler(
                 AudioKeepAliveHandler const& handler) override;
 
     private:
-        void handle_dbus_signal(
+        void dbus_method_call(
                 GDBusConnection* connection,
                 gchar const* sender,
                 gchar const* object_path,
                 gchar const* interface_name,
-                gchar const* signal_name,
-                GVariant* parameters);
+                gchar const* method_name,
+                GVariant* parameters,
+                GDBusMethodInvocation* invocation);
 
+        void dbus_unknown_method(
+                std::string const& sender, std::string const& name);
+
+        void dbus_SetAudioHeadphoneCS(
+                std::string const& sender,
+                std::string const& speaker);
+
+        void dbus_SetAudioKeepAlive(
+                std::string const& sender,
+                bool keep_alive);
+
+        std::shared_ptr<Log> const log;
         DBusConnectionHandle dbus_connection;
         DBusEventLoop dbus_event_loop;
-        HandlerRegistration dbus_signal_handler_registration;
+        HandlerRegistration audio_handler_registration;
 
+        AudioHeadphoneCSHandler audio_headphone_cs_handler;
         AudioKeepAliveHandler audio_keep_alive_handler;
-
-        HandlerRegistration keep_alive_handler_registration;
     };
 
 }

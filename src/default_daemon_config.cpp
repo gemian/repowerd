@@ -51,8 +51,7 @@
 #include "adapters/x11_lock.h"
 #include "adapters/unity_power_button.h"
 #include "adapters/gemian_silver_button.h"
-#include "adapters/gemian_audio_headphone_cs.h"
-#include "adapters/gemian_audio_keep_alive.h"
+#include "adapters/gemian_audio.h"
 #include "adapters/unity_screen_service.h"
 #include "adapters/unity_user_activity.h"
 #include "adapters/upower_power_source_and_lid.h"
@@ -268,16 +267,10 @@ repowerd::DefaultDaemonConfig::the_silver_button()
     return the_gemian_silver_button();
 }
 
-std::shared_ptr<repowerd::AudioHeadphoneCS>
-repowerd::DefaultDaemonConfig::the_audio_headphone_cs()
+std::shared_ptr<repowerd::Audio>
+repowerd::DefaultDaemonConfig::the_audio()
 {
-    return the_gemian_audio_headphone_cs();
-}
-
-std::shared_ptr<repowerd::AudioKeepAlive>
-repowerd::DefaultDaemonConfig::the_audio_keep_alive()
-{
-    return the_gemian_audio_keep_alive();
+    return the_gemian_audio();
 }
 
 std::shared_ptr<repowerd::PowerButtonEventSink>
@@ -676,20 +669,12 @@ repowerd::DefaultDaemonConfig::the_gemian_silver_button()
     return gemian_silver_button;
 }
 
-std::shared_ptr<repowerd::GemianAudioHeadphoneCS>
-repowerd::DefaultDaemonConfig::the_gemian_audio_headphone_cs()
+std::shared_ptr<repowerd::GemianAudio>
+repowerd::DefaultDaemonConfig::the_gemian_audio()
 {
-    if (!gemian_audio_headphone_cs)
-        gemian_audio_headphone_cs = std::make_shared<GemianAudioHeadphoneCS>(the_dbus_bus_address());
-    return gemian_audio_headphone_cs;
-}
-
-std::shared_ptr<repowerd::GemianAudioKeepAlive>
-repowerd::DefaultDaemonConfig::the_gemian_audio_keep_alive()
-{
-    if (!gemian_audio_keep_alive)
-        gemian_audio_keep_alive = std::make_shared<GemianAudioKeepAlive>(the_dbus_bus_address());
-    return gemian_audio_keep_alive;
+    if (!gemian_audio)
+        gemian_audio = std::make_shared<GemianAudio>(the_log(), the_dbus_bus_address());
+    return gemian_audio;
 }
 
 std::shared_ptr<repowerd::UPowerPowerSourceAndLid>

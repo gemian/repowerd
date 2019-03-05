@@ -27,9 +27,8 @@ add_executable(
     fake_notification_service.cpp
     fake_power_button.cpp
     fake_silver_button.cpp
-    fake_audio_headphone_cs.cpp
-    fake_audio_keep_alive.cpp
-    fake_power_source.cpp
+        fake_audio.cpp
+        fake_power_source.cpp
     fake_proximity_sensor.cpp
     fake_session_tracker.cpp
     fake_state_machine_options.cpp

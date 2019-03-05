@@ -41,8 +41,7 @@
 #include "src/core/log.h"
 #include "src/core/exec.h"
 #include "lock.h"
-#include "audio_headphone_cs.h"
-#include "audio_keep_alive.h"
+#include "audio.h"
 #include <future>
 #include <algorithm>
 
@@ -66,8 +65,7 @@ repowerd::Daemon::Daemon(DaemonConfig& config)
       notification_service{config.the_notification_service()},
       power_button{config.the_power_button()},
       silver_button{config.the_silver_button()},
-      audio_headphone_cs{config.the_audio_headphone_cs()},
-      audio_keep_alive{config.the_audio_keep_alive()},
+      audio{config.the_audio()},
       power_source{config.the_power_source()},
       proximity_sensor{config.the_proximity_sensor()},
       session_tracker{config.the_session_tracker()},
@@ -386,7 +384,7 @@ repowerd::Daemon::register_event_handlers()
             }));
 
     registrations.push_back(
-        audio_headphone_cs->register_audio_headphone_cs_handler(
+        audio->register_audio_headphone_cs_handler(
             [this] (AudioHeadphoneCSState state)
             {
                 if (state == AudioHeadphoneCSState::left) {
@@ -401,7 +399,7 @@ repowerd::Daemon::register_event_handlers()
             }));
 
     registrations.push_back(
-        audio_keep_alive->register_audio_keep_alive_handler(
+        audio->register_audio_keep_alive_handler(
             [this] (AudioKeepAliveState state)
             {
                 if (state == AudioKeepAliveState::idle) {
