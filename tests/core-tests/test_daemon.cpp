@@ -83,6 +83,12 @@ struct MockStateMachine : public repowerd::StateMachine
     MOCK_METHOD0(handle_silver_button_press, void());
     MOCK_METHOD0(handle_silver_button_release, void());
 
+    MOCK_METHOD0(handle_audio_headphone_cs_left_up, void());
+    MOCK_METHOD0(handle_audio_headphone_cs_right_up, void());
+
+    MOCK_METHOD0(handle_audio_keep_alive_idle, void());
+    MOCK_METHOD0(handle_audio_keep_alive_active, void());
+
     MOCK_METHOD0(handle_power_source_change, void());
     MOCK_METHOD0(handle_power_source_critical, void());
     MOCK_METHOD1(handle_set_critical_power_behavior,

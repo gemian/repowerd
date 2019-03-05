@@ -55,6 +55,12 @@ public:
     void handle_silver_button_press() override {}
     void handle_silver_button_release() override {}
 
+    void handle_audio_headphone_cs_left_up() override {}
+    void handle_audio_headphone_cs_right_up() override {}
+
+    void handle_audio_keep_alive_idle() override {}
+    void handle_audio_keep_alive_active() override {}
+
     void handle_power_source_change() override {}
     void handle_power_source_critical() override {}
     void handle_set_critical_power_behavior(PowerAction) override {}

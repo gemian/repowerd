@@ -34,6 +34,8 @@
 #include "mock_performance_booster.h"
 #include "fake_power_button.h"
 #include "fake_silver_button.h"
+#include "fake_audio_headphone_cs.h"
+#include "fake_audio_keep_alive.h"
 #include "mock_power_button_event_sink.h"
 #include "fake_power_source.h"
 #include "fake_proximity_sensor.h"
@@ -121,6 +123,16 @@ std::shared_ptr<repowerd::PowerButton> rt::DaemonConfig::the_power_button()
 std::shared_ptr<repowerd::SilverButton> rt::DaemonConfig::the_silver_button()
 {
     return the_fake_silver_button();
+}
+
+std::shared_ptr<repowerd::AudioHeadphoneCS> rt::DaemonConfig::the_audio_headphone_cs()
+{
+    return the_fake_audio_headphone_cs();
+}
+
+std::shared_ptr<repowerd::AudioKeepAlive> rt::DaemonConfig::the_audio_keep_alive()
+{
+    return the_fake_audio_keep_alive();
 }
 
 std::shared_ptr<repowerd::PowerButtonEventSink> rt::DaemonConfig::the_power_button_event_sink()
@@ -313,6 +325,22 @@ std::shared_ptr<rt::FakeSilverButton> rt::DaemonConfig::the_fake_silver_button()
         fake_silver_button = std::make_shared<rt::FakeSilverButton>();
 
     return fake_silver_button;
+}
+
+std::shared_ptr<rt::FakeAudioHeadphoneCS> rt::DaemonConfig::the_fake_audio_headphone_cs()
+{
+    if (!fake_audio_headphone_cs)
+        fake_audio_headphone_cs = std::make_shared<rt::FakeAudioHeadphoneCS>();
+
+    return fake_audio_headphone_cs;
+}
+
+std::shared_ptr<rt::FakeAudioKeepAlive> rt::DaemonConfig::the_fake_audio_keep_alive()
+{
+    if (!fake_audio_keep_alive)
+        fake_audio_keep_alive = std::make_shared<rt::FakeAudioKeepAlive>();
+
+    return fake_audio_keep_alive;
 }
 
 std::shared_ptr<NiceMock<rt::MockPowerButtonEventSink>>

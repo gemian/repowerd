@@ -55,6 +55,8 @@ set(
     unity_display.cpp
     unity_power_button.cpp
     gemian_silver_button.cpp
+    gemian_audio_headphone_cs.cpp
+    gemian_audio_keep_alive.cpp
     unity_screen_service.cpp
     unity_user_activity.cpp
     upower_power_source_and_lid.cpp

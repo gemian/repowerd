@@ -36,6 +36,8 @@ class TemporarySuspendInhibition;
 class UnityScreenService;
 class UnityPowerButton;
 class GemianSilverButton;
+class GemianAudioHeadphoneCS;
+class GemianAudioKeepAlive;
 class UnityDisplay;
 class X11Display;
 class X11Lock;
@@ -60,6 +62,8 @@ public:
     std::shared_ptr<PerformanceBooster> the_performance_booster() override;
     std::shared_ptr<PowerButton> the_power_button() override;
     std::shared_ptr<SilverButton> the_silver_button() override;
+    std::shared_ptr<AudioHeadphoneCS> the_audio_headphone_cs() override;
+    std::shared_ptr<AudioKeepAlive> the_audio_keep_alive() override;
     std::shared_ptr<PowerButtonEventSink> the_power_button_event_sink() override;
     std::shared_ptr<PowerSource> the_power_source() override;
     std::shared_ptr<ProximitySensor> the_proximity_sensor() override;
@@ -89,6 +93,8 @@ public:
     std::shared_ptr<UnityScreenService> the_unity_screen_service();
     std::shared_ptr<UnityPowerButton> the_unity_power_button();
     std::shared_ptr<GemianSilverButton> the_gemian_silver_button();
+    std::shared_ptr<GemianAudioHeadphoneCS> the_gemian_audio_headphone_cs();
+    std::shared_ptr<GemianAudioKeepAlive> the_gemian_audio_keep_alive();
     std::shared_ptr<UPowerPowerSourceAndLid> the_upower_power_source_and_lid();
     std::shared_ptr<WakeupService> the_wakeup_service();
 
@@ -122,6 +128,8 @@ private:
     std::shared_ptr<X11Lock> x11_lock;
     std::shared_ptr<UnityPowerButton> unity_power_button;
     std::shared_ptr<GemianSilverButton> gemian_silver_button;
+    std::shared_ptr<GemianAudioHeadphoneCS> gemian_audio_headphone_cs;
+    std::shared_ptr<GemianAudioKeepAlive> gemian_audio_keep_alive;
     std::shared_ptr<UnityScreenService> unity_screen_service;
     std::shared_ptr<UPowerPowerSourceAndLid> upower_power_source_and_lid;
     std::shared_ptr<UserActivity> user_activity;

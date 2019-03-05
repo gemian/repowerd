@@ -39,6 +39,8 @@ class NotificationService;
 class PerformanceBooster;
 class PowerButton;
 class SilverButton;
+class AudioHeadphoneCS;
+class AudioKeepAlive;
 class PowerButtonEventSink;
 class PowerSource;
 class ProximitySensor;
@@ -71,6 +73,8 @@ public:
     virtual std::shared_ptr<PerformanceBooster> the_performance_booster() = 0;
     virtual std::shared_ptr<PowerButton> the_power_button() = 0;
     virtual std::shared_ptr<SilverButton> the_silver_button() = 0;
+    virtual std::shared_ptr<AudioHeadphoneCS> the_audio_headphone_cs() = 0;
+    virtual std::shared_ptr<AudioKeepAlive> the_audio_keep_alive() = 0;
     virtual std::shared_ptr<PowerButtonEventSink> the_power_button_event_sink() = 0;
     virtual std::shared_ptr<PowerSource> the_power_source() = 0;
     virtual std::shared_ptr<ProximitySensor> the_proximity_sensor() = 0;

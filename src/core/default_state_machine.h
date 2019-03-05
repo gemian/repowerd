@@ -64,6 +64,12 @@ public:
     void handle_silver_button_press() override;
     void handle_silver_button_release() override;
 
+    void handle_audio_headphone_cs_left_up() override;
+    void handle_audio_headphone_cs_right_up() override;
+
+    void handle_audio_keep_alive_idle() override;
+    void handle_audio_keep_alive_active() override;
+
     void handle_power_source_change() override;
     void handle_power_source_critical() override;
     void handle_set_critical_power_behavior(
@@ -170,8 +176,10 @@ private:
     DisplayPowerChangeReason display_power_mode_reason;
     AlarmId power_button_long_press_alarm_id;
     AlarmId silver_button_long_press_alarm_id;
+    AlarmId keep_alive_alarm_id;
     bool power_button_long_press_detected;
     std::chrono::milliseconds power_button_long_press_timeout;
+    std::chrono::milliseconds keep_alive_alarm_timeout;
     OfonoCallState call_state;
     AlarmId user_inactivity_display_dim_alarm_id;
     AlarmId user_inactivity_display_off_alarm_id;

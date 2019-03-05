@@ -88,8 +88,10 @@ repowerd::DefaultStateMachine::DefaultStateMachine(
       display_power_mode_at_power_button_press{DisplayPowerMode::unknown},
       display_power_mode_reason{DisplayPowerChangeReason::unknown},
       power_button_long_press_alarm_id{AlarmId::invalid},
+      keep_alive_alarm_id{AlarmId::invalid},
       power_button_long_press_detected{false},
       power_button_long_press_timeout{config.the_state_machine_options()->power_button_long_press_timeout()},
+      keep_alive_alarm_timeout{config.the_state_machine_options()->keep_alive_alarm_timeout()},
       user_inactivity_display_dim_alarm_id{AlarmId::invalid},
       user_inactivity_display_off_alarm_id{AlarmId::invalid},
       user_inactivity_normal_display_dim_duration{
@@ -131,10 +133,15 @@ void repowerd::DefaultStateMachine::handle_alarm(AlarmId id)
 {
     if (id == power_button_long_press_alarm_id)
     {
-        log->log(log_tag, "handle_alarm(long_press)");
+        log->log(log_tag, "handle_alarm(power_long_press)");
         power_button_event_sink->notify_long_press();
         power_button_long_press_detected = true;
         power_button_long_press_alarm_id = AlarmId::invalid;
+    }
+    else if (id == silver_button_long_press_alarm_id)
+    {
+        log->log(log_tag, "handle_alarm(silver_long_press)");
+        silver_button_long_press_alarm_id = AlarmId::invalid;
     }
     else if (id == user_inactivity_display_dim_alarm_id)
     {
@@ -173,6 +180,12 @@ void repowerd::DefaultStateMachine::handle_alarm(AlarmId id)
 
         allow_inactivity_timeout(InactivityTimeoutAllowance::notification);
         disable_proximity(ProximityEnablement::until_far_event_or_notification_expiration);
+    }
+    else if (id == keep_alive_alarm_id)
+    {
+        log->log(log_tag, "handle_alarm(keep_alive_expiration)");
+        handle_allow_suspend();
+        keep_alive_alarm_id = AlarmId::invalid;
     }
 }
 
@@ -519,6 +532,37 @@ void repowerd::DefaultStateMachine::handle_silver_button_release() {
 
     display_power_mode_at_silver_button_press = DisplayPowerMode::unknown;
     silver_button_long_press_alarm_id = AlarmId::invalid;
+}
+
+void repowerd::DefaultStateMachine::handle_audio_headphone_cs_left_up()
+{
+    auto ret = system("echo 0 | /proc/headphone_cs");
+    log->log(log_tag, "handle_audio_headphone_cs_left_up - %d", ret);
+}
+
+void repowerd::DefaultStateMachine::handle_audio_headphone_cs_right_up()
+{
+    auto ret = system("echo 1 | /proc/headphone_cs");
+    log->log(log_tag, "handle_audio_headphone_cs_left_up - %d", ret);
+}
+
+void repowerd::DefaultStateMachine::handle_audio_keep_alive_active() {
+    log->log(log_tag, "handle_silver_button_press");
+
+    handle_disallow_suspend();
+
+    if (keep_alive_alarm_id != AlarmId::invalid) {
+        timer->cancel_alarm(keep_alive_alarm_id);
+    }
+    keep_alive_alarm_id = timer->schedule_alarm_in(keep_alive_alarm_timeout);
+}
+
+void repowerd::DefaultStateMachine::handle_audio_keep_alive_idle() {
+    log->log(log_tag, "handle_silver_button_press");
+
+    handle_allow_suspend();
+
+    keep_alive_alarm_id = AlarmId::invalid;
 }
 
 void repowerd::DefaultStateMachine::handle_power_source_change()

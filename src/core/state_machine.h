@@ -65,6 +65,12 @@ public:
     virtual void handle_silver_button_press() = 0;
     virtual void handle_silver_button_release() = 0;
 
+    virtual void handle_audio_headphone_cs_left_up() = 0;
+    virtual void handle_audio_headphone_cs_right_up() = 0;
+
+    virtual void handle_audio_keep_alive_idle() = 0;
+    virtual void handle_audio_keep_alive_active() = 0;
+
     virtual void handle_power_source_change() = 0;
     virtual void handle_power_source_critical() = 0;
     virtual void handle_set_critical_power_behavior(

@@ -41,6 +41,8 @@
 #include "src/core/log.h"
 #include "src/core/exec.h"
 #include "lock.h"
+#include "audio_headphone_cs.h"
+#include "audio_keep_alive.h"
 #include <future>
 #include <algorithm>
 
@@ -379,6 +381,36 @@ repowerd::Daemon::register_event_handlers()
                     enqueue_action_to_active_session(
                         [this] (Session* s) { s->state_machine->handle_silver_button_press(); });
                 }
+            }));
+
+    registrations.push_back(
+        audio_headphone_cs->register_audio_headphone_cs_handler(
+            [this] (AudioHeadphoneCSState state)
+            {
+                if (state == AudioHeadphoneCSState::left) {
+                    enqueue_action_to_active_session(
+                        [this] (Session *s) { s->state_machine->handle_audio_headphone_cs_left_up(); });
+                }
+                else
+                {
+                    enqueue_action_to_active_session(
+                        [this] (Session* s) { s->state_machine->handle_audio_headphone_cs_right_up(); });
+                }
+            }));
+
+    registrations.push_back(
+        audio_keep_alive->register_audio_keep_alive_handler(
+            [this] (AudioKeepAliveState state)
+            {
+                if (state == AudioKeepAliveState::idle) {
+                    enqueue_action_to_active_session(
+                        [this] (Session *s) { s->state_machine->handle_audio_keep_alive_idle(); });
+                }
+                else
+                {
+                    enqueue_action_to_active_session(
+                        [this] (Session* s) { s->state_machine->handle_audio_keep_alive_active(); });
+                    }
             }));
 
     registrations.push_back(
