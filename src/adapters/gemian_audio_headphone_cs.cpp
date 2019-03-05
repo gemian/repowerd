@@ -25,6 +25,16 @@ namespace
     char const* const dbus_audio_headphone_cs_name = "org.thinkglobally.Gemian.Audio.HeadphoneCS";
     char const* const dbus_audio_headphone_cs_path = "/org/thinkglobally/Gemian/Audio.HeadphoneCS";
     char const* const dbus_audio_headphone_cs_interface = "org.thinkglobally.Gemian.Audio.HeadphoneCS";
+
+    char const* const dbus_audio_headphone_cs_introspection = R"(
+<node>
+  <interface name='org.thinkglobally.Gemian.Audio.HeadphoneCS'>
+    <signal name='Left'>
+    </signal>
+    <signal name='Right'>
+    </signal>
+  </interface>
+</node>)";
 }
 
 repowerd::GemianAudioHeadphoneCS::GemianAudioHeadphoneCS(std::string const& dbus_bus_address)
@@ -36,6 +46,24 @@ repowerd::GemianAudioHeadphoneCS::GemianAudioHeadphoneCS(std::string const& dbus
 
 void repowerd::GemianAudioHeadphoneCS::start_processing()
 {
+    headphone_handler_registration = dbus_event_loop.register_object_handler(
+            dbus_connection,
+            dbus_audio_headphone_cs_path,
+            dbus_audio_headphone_cs_introspection,
+            [this] (
+                    GDBusConnection*,
+                    gchar const*,
+                    gchar const*,
+                    gchar const*,
+                    gchar const*,
+                    GVariant*,
+                    GDBusMethodInvocation* invocation)
+            {
+                g_dbus_method_invocation_return_error_literal(invocation, G_DBUS_ERROR, G_DBUS_ERROR_NOT_SUPPORTED, "");
+            });
+
+    dbus_connection.request_name(dbus_audio_headphone_cs_name);
+
     dbus_signal_handler_registration = dbus_event_loop.register_signal_handler(
             dbus_connection,
             dbus_audio_headphone_cs_name,

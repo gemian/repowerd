@@ -25,6 +25,16 @@ namespace
     char const* const dbus_audio_keep_alive_name = "org.thinkglobally.Gemian.Audio.KeepAlive";
     char const* const dbus_audio_keep_alive_path = "/org/thinkglobally/Gemian/Audio.KeepAlive";
     char const* const dbus_audio_keep_alive_interface = "org.thinkglobally.Gemian.Audio.KeepAlive";
+
+    char const* const dbus_audio_keep_alive_introspection = R"(
+<node>
+  <interface name='org.thinkglobally.Gemian.Audio.KeepAlive'>
+    <signal name='Stop'>
+    </signal>
+    <signal name='KeepAlive'>
+    </signal>
+  </interface>
+</node>)";
 }
 
 repowerd::GemianAudioKeepAlive::GemianAudioKeepAlive(std::string const& dbus_bus_address)
@@ -36,6 +46,24 @@ repowerd::GemianAudioKeepAlive::GemianAudioKeepAlive(std::string const& dbus_bus
 
 void repowerd::GemianAudioKeepAlive::start_processing()
 {
+    keep_alive_handler_registration = dbus_event_loop.register_object_handler(
+            dbus_connection,
+            dbus_audio_keep_alive_path,
+            dbus_audio_keep_alive_introspection,
+            [this] (
+                    GDBusConnection*,
+                    gchar const*,
+                    gchar const*,
+                    gchar const*,
+                    gchar const*,
+                    GVariant*,
+                    GDBusMethodInvocation* invocation)
+            {
+                g_dbus_method_invocation_return_error_literal(invocation, G_DBUS_ERROR, G_DBUS_ERROR_NOT_SUPPORTED, "");
+            });
+
+    dbus_connection.request_name(dbus_audio_keep_alive_name);
+
     dbus_signal_handler_registration = dbus_event_loop.register_signal_handler(
             dbus_connection,
             dbus_audio_keep_alive_name,

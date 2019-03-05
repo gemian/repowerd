@@ -50,6 +50,8 @@ namespace repowerd
         HandlerRegistration dbus_signal_handler_registration;
 
         AudioKeepAliveHandler audio_keep_alive_handler;
+
+        HandlerRegistration keep_alive_handler_registration;
     };
 
 }

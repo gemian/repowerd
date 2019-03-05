@@ -50,6 +50,8 @@ namespace repowerd
         HandlerRegistration dbus_signal_handler_registration;
 
         AudioHeadphoneCSHandler audio_headphone_cs_handler;
+
+        HandlerRegistration headphone_handler_registration;
     };
 
 }
