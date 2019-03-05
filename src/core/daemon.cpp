@@ -511,6 +511,7 @@ void repowerd::Daemon::start_event_processing()
     notification_service->start_processing();
     power_button->start_processing();
     silver_button->start_processing();
+    audio->start_processing();
     power_source->start_processing();
     system_power_control->start_processing();
     user_activity->start_processing();
