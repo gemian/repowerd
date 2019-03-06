@@ -952,8 +952,7 @@ void repowerd::DefaultStateMachine::turn_off_display(
     performance_booster->disable_interactive_mode();
     if (reason != DisplayPowerChangeReason::proximity)
     {
-        if ((reason == DisplayPowerChangeReason::activity && suspend_allowed) ||
-            reason != DisplayPowerChangeReason::activity)
+        if (suspend_allowed)
         {
             system_power_control->allow_automatic_suspend(suspend_id);
         }
