@@ -536,13 +536,13 @@ void repowerd::DefaultStateMachine::handle_silver_button_release() {
 
 void repowerd::DefaultStateMachine::handle_audio_headphone_cs_left_up()
 {
-    auto ret = system("echo 0 | /proc/headphone_cs");
+    auto ret = system("echo 0 > /proc/headphone_cs");
     log->log(log_tag, "handle_audio_headphone_cs_left_up - %d", ret);
 }
 
 void repowerd::DefaultStateMachine::handle_audio_headphone_cs_right_up()
 {
-    auto ret = system("echo 1 | /proc/headphone_cs");
+    auto ret = system("echo 1 > /proc/headphone_cs");
     log->log(log_tag, "handle_audio_headphone_cs_left_up - %d", ret);
 }
 
