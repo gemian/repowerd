@@ -547,7 +547,7 @@ void repowerd::DefaultStateMachine::handle_audio_headphone_cs_right_up()
 }
 
 void repowerd::DefaultStateMachine::handle_audio_keep_alive_active() {
-    log->log(log_tag, "handle_silver_button_press");
+    log->log(log_tag, "handle_audio_keep_alive_active");
 
     handle_disallow_suspend();
 
@@ -558,7 +558,7 @@ void repowerd::DefaultStateMachine::handle_audio_keep_alive_active() {
 }
 
 void repowerd::DefaultStateMachine::handle_audio_keep_alive_idle() {
-    log->log(log_tag, "handle_silver_button_press");
+    log->log(log_tag, "handle_audio_keep_alive_idle");
 
     handle_allow_suspend();
 
