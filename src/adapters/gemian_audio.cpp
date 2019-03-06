@@ -116,8 +116,8 @@ void repowerd::GemianAudio::dbus_method_call(
     }
     else if (method_name == "SetAudioKeepAlive")
     {
-        bool keep_alive{false};
-        g_variant_get(parameters, "(&b)", &keep_alive);
+        gboolean keep_alive{false};
+        g_variant_get(parameters, "(b)", &keep_alive);
 
         dbus_SetAudioKeepAlive(sender, keep_alive);
 
