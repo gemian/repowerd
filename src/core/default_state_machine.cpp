@@ -543,7 +543,7 @@ void repowerd::DefaultStateMachine::handle_audio_headphone_cs_left_up()
 void repowerd::DefaultStateMachine::handle_audio_headphone_cs_right_up()
 {
     auto ret = system("echo 1 > /proc/headphone_cs");
-    log->log(log_tag, "handle_audio_headphone_cs_left_up - %d", ret);
+    log->log(log_tag, "handle_audio_headphone_cs_right_up - %d", ret);
 }
 
 void repowerd::DefaultStateMachine::handle_audio_keep_alive_active() {
