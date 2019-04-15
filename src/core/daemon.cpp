@@ -26,6 +26,7 @@
 #include "notification_service.h"
 #include "null_state_machine.h"
 #include "power_button.h"
+#include "silver_button.h"
 #include "power_source.h"
 #include "proximity_sensor.h"
 #include "session_tracker.h"
@@ -35,10 +36,12 @@
 #include "timer.h"
 #include "user_activity.h"
 #include "voice_call_service.h"
+#include "call_control.h"
 
 #include "src/core/log.h"
 #include "src/core/exec.h"
 #include "lock.h"
+#include "audio.h"
 #include <future>
 #include <algorithm>
 
@@ -61,6 +64,8 @@ repowerd::Daemon::Daemon(DaemonConfig& config)
       lock{config.the_lock()},
       notification_service{config.the_notification_service()},
       power_button{config.the_power_button()},
+      silver_button{config.the_silver_button()},
+      audio{config.the_audio()},
       power_source{config.the_power_source()},
       proximity_sensor{config.the_proximity_sensor()},
       session_tracker{config.the_session_tracker()},
@@ -244,6 +249,14 @@ repowerd::Daemon::register_event_handlers()
             }));
 
     registrations.push_back(
+        voice_call_service->register_update_call_state_handler(
+            [this] (OfonoCallState state)
+            {
+                enqueue_action_to_active_session(
+                    [this,state] (Session* s) { s->state_machine->handle_update_call_state(state); });
+            }));
+
+    registrations.push_back(
         client_requests->register_set_normal_brightness_value_handler(
             [this] (double value, pid_t pid)
             {
@@ -356,6 +369,51 @@ repowerd::Daemon::register_event_handlers()
             }));
 
     registrations.push_back(
+        silver_button->register_silver_button_handler(
+            [this] (SilverButtonState state)
+            {
+                if (state == SilverButtonState::released) {
+                    enqueue_action_to_active_session(
+                        [this] (Session *s) { s->state_machine->handle_silver_button_release(); });
+                }
+                else
+                {
+                    enqueue_action_to_active_session(
+                        [this] (Session* s) { s->state_machine->handle_silver_button_press(); });
+                }
+            }));
+
+    registrations.push_back(
+        audio->register_audio_headphone_cs_handler(
+            [this] (AudioHeadphoneCSState state)
+            {
+                if (state == AudioHeadphoneCSState::left) {
+                    enqueue_action_to_active_session(
+                        [this] (Session *s) { s->state_machine->handle_audio_headphone_cs_left_up(); });
+                }
+                else
+                {
+                    enqueue_action_to_active_session(
+                        [this] (Session* s) { s->state_machine->handle_audio_headphone_cs_right_up(); });
+                }
+            }));
+
+    registrations.push_back(
+        audio->register_audio_keep_alive_handler(
+            [this] (AudioKeepAliveState state)
+            {
+                if (state == AudioKeepAliveState::idle) {
+                    enqueue_action_to_active_session(
+                        [this] (Session *s) { s->state_machine->handle_audio_keep_alive_idle(); });
+                }
+                else
+                {
+                    enqueue_action_to_active_session(
+                        [this] (Session* s) { s->state_machine->handle_audio_keep_alive_active(); });
+                    }
+            }));
+
+    registrations.push_back(
         lock->register_lock_handler(
             [this] (LockState lock_state)
             {
@@ -452,6 +510,8 @@ void repowerd::Daemon::start_event_processing()
     lock->start_processing();
     notification_service->start_processing();
     power_button->start_processing();
+    silver_button->start_processing();
+    audio->start_processing();
     power_source->start_processing();
     system_power_control->start_processing();
     user_activity->start_processing();
@@ -600,6 +660,8 @@ std::vector<std::string> repowerd::Daemon::sessions_for_pid(pid_t pid)
 
 void repowerd::Daemon::add_session_with_active_call(Session* session)
 {
+    the_log->log(log_tag, "add_session_with_active_call - size:%lu", sessions_with_active_calls.size());
+
     auto const iter = std::find_if(sessions.begin(), sessions.end(),
         [&] (auto const& kv)
         {

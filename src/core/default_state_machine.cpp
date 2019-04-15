@@ -21,6 +21,7 @@
 
 #include "display_information.h"
 #include "brightness_control.h"
+#include "call_control.h"
 #include "display_power_control.h"
 #include "display_power_event_sink.h"
 #include "infinite_timeout.h"
@@ -79,6 +80,7 @@ repowerd::DefaultStateMachine::DefaultStateMachine(
       performance_booster{config.the_performance_booster()},
       power_button_event_sink{config.the_power_button_event_sink()},
       power_source{config.the_power_source()},
+      call_control{config.the_call_control()},
       proximity_sensor{config.the_proximity_sensor()},
       system_power_control{config.the_system_power_control()},
       timer{config.the_timer()},
@@ -86,8 +88,10 @@ repowerd::DefaultStateMachine::DefaultStateMachine(
       display_power_mode_at_power_button_press{DisplayPowerMode::unknown},
       display_power_mode_reason{DisplayPowerChangeReason::unknown},
       power_button_long_press_alarm_id{AlarmId::invalid},
+      keep_alive_alarm_id{AlarmId::invalid},
       power_button_long_press_detected{false},
       power_button_long_press_timeout{config.the_state_machine_options()->power_button_long_press_timeout()},
+      keep_alive_alarm_timeout{config.the_state_machine_options()->keep_alive_alarm_timeout()},
       user_inactivity_display_dim_alarm_id{AlarmId::invalid},
       user_inactivity_display_off_alarm_id{AlarmId::invalid},
       user_inactivity_normal_display_dim_duration{
@@ -129,10 +133,15 @@ void repowerd::DefaultStateMachine::handle_alarm(AlarmId id)
 {
     if (id == power_button_long_press_alarm_id)
     {
-        log->log(log_tag, "handle_alarm(long_press)");
+        log->log(log_tag, "handle_alarm(power_long_press)");
         power_button_event_sink->notify_long_press();
         power_button_long_press_detected = true;
         power_button_long_press_alarm_id = AlarmId::invalid;
+    }
+    else if (id == silver_button_long_press_alarm_id)
+    {
+        log->log(log_tag, "handle_alarm(silver_long_press)");
+        silver_button_long_press_alarm_id = AlarmId::invalid;
     }
     else if (id == user_inactivity_display_dim_alarm_id)
     {
@@ -171,6 +180,12 @@ void repowerd::DefaultStateMachine::handle_alarm(AlarmId id)
 
         allow_inactivity_timeout(InactivityTimeoutAllowance::notification);
         disable_proximity(ProximityEnablement::until_far_event_or_notification_expiration);
+    }
+    else if (id == keep_alive_alarm_id)
+    {
+        log->log(log_tag, "handle_alarm(keep_alive_expiration)");
+        handle_allow_suspend();
+        keep_alive_alarm_id = AlarmId::invalid;
     }
 }
 
@@ -214,6 +229,13 @@ void repowerd::DefaultStateMachine::handle_no_active_call()
     }
 
     disable_proximity(ProximityEnablement::until_disabled);
+}
+
+void repowerd::DefaultStateMachine::handle_update_call_state(OfonoCallState state)
+{
+    log->log(log_tag, "handle_update_call_state");
+
+    call_state = state;
 }
 
 void repowerd::DefaultStateMachine::handle_enable_inactivity_timeout()
@@ -468,6 +490,79 @@ void repowerd::DefaultStateMachine::handle_power_button_release()
 
     display_power_mode_at_power_button_press = DisplayPowerMode::unknown;
     power_button_long_press_alarm_id = AlarmId::invalid;
+}
+
+void repowerd::DefaultStateMachine::handle_silver_button_press()
+{
+    log->log(log_tag, "handle_silver_button_press");
+
+    display_power_mode_at_silver_button_press = display_power_mode;
+
+    if (treat_power_button_as_user_activity && display_power_mode == DisplayPowerMode::on) {
+        brighten_display();
+        schedule_normal_user_inactivity_alarm();
+        display_power_mode_reason = DisplayPowerChangeReason::silver_button;
+    }
+
+    auto time_span = (std::chrono::steady_clock::now() - silver_button_last_press_time);
+    double nseconds = double(time_span.count()) * std::chrono::steady_clock::period::num / std::chrono::steady_clock::period::den;
+    if (nseconds < 1) {
+        return;
+    }
+    silver_button_last_press_time = std::chrono::steady_clock::now();
+
+    if (call_state == OfonoCallState::incoming || call_state == OfonoCallState::alerting ||
+        call_state == OfonoCallState::dialing || call_state == OfonoCallState::active) {
+        call_control->hang_up_and_accept_call();
+    } else {
+        //TODO: This needs to change to something that can be stopped by pressing the button again, possibly using speech-dispatcher
+        auto ret = system("saytime -f %l%M");
+        log->log(log_tag, "saytime %d",ret);
+    }
+
+    silver_button_long_press_alarm_id = timer->schedule_alarm_in(power_button_long_press_timeout);
+}
+
+void repowerd::DefaultStateMachine::handle_silver_button_release() {
+    log->log(log_tag, "handle_silver_button_release");
+
+    if (power_button_long_press_detected) {
+        power_button_long_press_detected = false;
+    }
+
+    display_power_mode_at_silver_button_press = DisplayPowerMode::unknown;
+    silver_button_long_press_alarm_id = AlarmId::invalid;
+}
+
+void repowerd::DefaultStateMachine::handle_audio_headphone_cs_left_up()
+{
+    auto ret = system("echo 0 > /proc/headphone_cs");
+    log->log(log_tag, "handle_audio_headphone_cs_left_up - %d", ret);
+}
+
+void repowerd::DefaultStateMachine::handle_audio_headphone_cs_right_up()
+{
+    auto ret = system("echo 1 > /proc/headphone_cs");
+    log->log(log_tag, "handle_audio_headphone_cs_right_up - %d", ret);
+}
+
+void repowerd::DefaultStateMachine::handle_audio_keep_alive_active() {
+    log->log(log_tag, "handle_audio_keep_alive_active");
+
+    handle_disallow_suspend();
+
+    if (keep_alive_alarm_id != AlarmId::invalid) {
+        timer->cancel_alarm(keep_alive_alarm_id);
+    }
+    keep_alive_alarm_id = timer->schedule_alarm_in(keep_alive_alarm_timeout);
+}
+
+void repowerd::DefaultStateMachine::handle_audio_keep_alive_idle() {
+    log->log(log_tag, "handle_audio_keep_alive_idle");
+
+    handle_allow_suspend();
+
+    keep_alive_alarm_id = AlarmId::invalid;
 }
 
 void repowerd::DefaultStateMachine::handle_power_source_change()
@@ -857,8 +952,7 @@ void repowerd::DefaultStateMachine::turn_off_display(
     performance_booster->disable_interactive_mode();
     if (reason != DisplayPowerChangeReason::proximity)
     {
-        if ((reason == DisplayPowerChangeReason::activity && suspend_allowed) ||
-            reason != DisplayPowerChangeReason::activity)
+        if (suspend_allowed)
         {
             system_power_control->allow_automatic_suspend(suspend_id);
         }

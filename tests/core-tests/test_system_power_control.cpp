@@ -104,7 +104,7 @@ TEST_F(ASystemPowerControl,
     press_power_off_button();
     release_power_button();
 
-    expect_automatic_suspend_is_allowed();
+    expect_automatic_suspend_is_disallowed();
 }
 
 TEST_F(ASystemPowerControl,

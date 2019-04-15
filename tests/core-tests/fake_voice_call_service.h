@@ -38,9 +38,12 @@ public:
         ActiveCallHandler const& handler) override;
     HandlerRegistration register_no_active_call_handler(
         NoActiveCallHandler const& handler) override;
+    HandlerRegistration register_update_call_state_handler(
+        UpdateCallStateHandler const& handler) override;
 
     void emit_active_call();
     void emit_no_active_call();
+    void emit_update_call_state(OfonoCallState state);
 
     struct Mock
     {
@@ -49,12 +52,15 @@ public:
         MOCK_METHOD0(unregister_active_call_handler, void());
         MOCK_METHOD1(register_no_active_call_handler, void(NoActiveCallHandler const&));
         MOCK_METHOD0(unregister_no_active_call_handler, void());
+        MOCK_METHOD1(register_update_call_state_handler, void(UpdateCallStateHandler const&));
+        MOCK_METHOD0(unregister_update_call_state_handler, void());
     };
     testing::NiceMock<Mock> mock;
 
 private:
     ActiveCallHandler active_call_handler;
     NoActiveCallHandler no_active_call_handler;
+    UpdateCallStateHandler update_call_state_handler;
 };
 
 }

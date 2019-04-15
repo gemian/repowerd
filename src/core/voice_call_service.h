@@ -24,9 +24,20 @@
 
 namespace repowerd
 {
+enum class OfonoCallState {
+    invalid,
+    active,
+    alerting,
+    dialing,
+    disconnected,
+    held,
+    incoming,
+    waiting
+};
 
 using ActiveCallHandler = std::function<void()>;
 using NoActiveCallHandler = std::function<void()>;
+using UpdateCallStateHandler = std::function<void(OfonoCallState)>;
 
 class VoiceCallService
 {
@@ -40,6 +51,9 @@ public:
 
     virtual HandlerRegistration register_no_active_call_handler(
         NoActiveCallHandler const& handler) = 0;
+
+    virtual HandlerRegistration register_update_call_state_handler(
+        UpdateCallStateHandler const &handler) = 0;
 
 protected:
     VoiceCallService() = default;

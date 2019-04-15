@@ -25,6 +25,7 @@ enum class DisplayPowerChangeReason
 {
     unknown,
     power_button,
+    silver_button,
     activity,
     proximity,
     notification,

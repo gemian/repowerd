@@ -16,7 +16,7 @@
 
 project(repowerd)
 
-set(REPOWERD_VERSION "2017.03")
+set(REPOWERD_VERSION "2019.03")
 
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -38,9 +38,9 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(ANDROID_PROPERTIES REQUIRED libandroid-properties)
 pkg_check_modules(GIO REQUIRED gio-2.0)
 pkg_check_modules(GIO_UNIX REQUIRED gio-unix-2.0)
-#pkg_check_modules(UA REQUIRED ubuntu-platform-api)
+pkg_check_modules(UA REQUIRED ubuntu-platform-api)
 pkg_check_modules(LIBHARDWARE REQUIRED libhardware)
-#pkg_check_modules(UBUNTU_PLATFORM_HARDWARE_API REQUIRED ubuntu-platform-hardware-api)
+pkg_check_modules(UBUNTU_PLATFORM_HARDWARE_API REQUIRED ubuntu-platform-hardware-api)
 find_package(AndroidHeaders REQUIRED)
 
 set(build_types "None;Debug;Release;RelWithDebInfo;MinSizeRel;AddressSanitizer;ThreadSanitizer")

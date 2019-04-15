@@ -37,6 +37,7 @@ public:
 
     void handle_active_call() override;
     void handle_no_active_call() override;
+    void handle_update_call_state(OfonoCallState state) override;
 
     void handle_enable_inactivity_timeout() override;
     void handle_disable_inactivity_timeout() override;
@@ -59,6 +60,15 @@ public:
 
     void handle_power_button_press(PowerButtonState state) override;
     void handle_power_button_release() override;
+
+    void handle_silver_button_press() override;
+    void handle_silver_button_release() override;
+
+    void handle_audio_headphone_cs_left_up() override;
+    void handle_audio_headphone_cs_right_up() override;
+
+    void handle_audio_keep_alive_idle() override;
+    void handle_audio_keep_alive_active() override;
 
     void handle_power_source_change() override;
     void handle_power_source_critical() override;
@@ -153,6 +163,7 @@ private:
     std::shared_ptr<PerformanceBooster> const performance_booster;
     std::shared_ptr<PowerButtonEventSink> const power_button_event_sink;
     std::shared_ptr<PowerSource> const power_source;
+    std::shared_ptr<CallControl> const call_control;
     std::shared_ptr<ProximitySensor> const proximity_sensor;
     std::shared_ptr<SystemPowerControl> const system_power_control;
     std::shared_ptr<Timer> const timer;
@@ -161,10 +172,15 @@ private:
     std::array<bool,ProximityEnablement::count> proximity_enablements;
     DisplayPowerMode display_power_mode;
     DisplayPowerMode display_power_mode_at_power_button_press;
+    DisplayPowerMode display_power_mode_at_silver_button_press;
     DisplayPowerChangeReason display_power_mode_reason;
     AlarmId power_button_long_press_alarm_id;
+    AlarmId silver_button_long_press_alarm_id;
+    AlarmId keep_alive_alarm_id;
     bool power_button_long_press_detected;
     std::chrono::milliseconds power_button_long_press_timeout;
+    std::chrono::milliseconds keep_alive_alarm_timeout;
+    OfonoCallState call_state;
     AlarmId user_inactivity_display_dim_alarm_id;
     AlarmId user_inactivity_display_off_alarm_id;
     AlarmId user_inactivity_suspend_alarm_id;
@@ -182,6 +198,7 @@ private:
     ScheduledTimeoutType scheduled_timeout_type;
     ConfigurablePowerAction lid_power_action;
     PowerAction critical_power_action;
+    std::chrono::steady_clock::time_point silver_button_last_press_time;
 
     bool paused;
     bool autobrightness_enabled;

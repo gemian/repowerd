@@ -33,6 +33,7 @@ public:
 
     std::chrono::milliseconds notification_expiration_timeout() const override;
     std::chrono::milliseconds power_button_long_press_timeout() const override;
+    std::chrono::milliseconds keep_alive_alarm_timeout() const override;
     std::chrono::milliseconds user_inactivity_normal_display_dim_duration() const override;
     std::chrono::milliseconds user_inactivity_normal_display_off_timeout() const override;
     std::chrono::milliseconds user_inactivity_normal_suspend_timeout() const override;

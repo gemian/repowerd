@@ -65,7 +65,7 @@ struct GSourceFdContext
     {
     }
 
-    static gboolean static_call(int, GIOCondition, GSourceFdContext* ctx)
+    static gboolean static_call(GSourceFdContext* ctx)
     {
         try
         {

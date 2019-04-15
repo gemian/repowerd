@@ -86,22 +86,3 @@ void repowerd::UbuntuLightSensor::handle_light_event(double light)
 {
     handler(light);
 }
-
-void *repowerd::UbuntuLightSensor::ua_sensors_light_new() {
-    return nullptr;
-}
-
-void repowerd::UbuntuLightSensor::ua_sensors_light_set_reading_cb(void *const, void (*)(void *, void *), UbuntuLightSensor *) {
-}
-
-void repowerd::UbuntuLightSensor::ua_sensors_light_enable(void *const) {
-
-}
-
-void repowerd::UbuntuLightSensor::ua_sensors_light_disable(void *const) {
-
-}
-
-void repowerd::UbuntuLightSensor::uas_light_event_get_light(void *, float *) {
-
-}

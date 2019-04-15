@@ -67,6 +67,9 @@ struct AnOfonoVoiceCallService : testing::Test
         registrations.push_back(
             ofono_voice_call_service.register_no_active_call_handler(
                 [this] { mock_handlers.no_active_call(); }));
+        registrations.push_back(
+            ofono_voice_call_service.register_update_call_state_handler(
+                [this] (repowerd::OfonoCallState state) { mock_handlers.update_call_state(state); }));
 
         ofono.add_modem(initial_modem);
 
@@ -91,6 +94,7 @@ struct AnOfonoVoiceCallService : testing::Test
     {
         MOCK_METHOD0(active_call, void());
         MOCK_METHOD0(no_active_call, void());
+        MOCK_METHOD1(update_call_state, void(repowerd::OfonoCallState));
     };
     testing::NiceMock<MockHandlers> mock_handlers;
 

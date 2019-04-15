@@ -15,6 +15,8 @@ Build-Depends: debhelper (>= 9),
                libx11-dev (>= 2:1.0.0),
                libxext-dev (>= 1:1.0.0),
                libhardware-dev,
+               libubuntu-application-api-dev,
+               libubuntu-platform-hardware-api-dev,
                pkg-config
 Standards-Version: 3.9.7
 Homepage: https://github.com/gemian/repowerd
@@ -25,7 +27,8 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          repowerd-data (= ${source:Version}),
-         gemian-leds
+         gemian-leds,
+         ubuntu-application-api3-touch
 Replaces: powerd (<< 2016.05~)
 Breaks: powerd (<< 2016.05~)
 Provides: powerd

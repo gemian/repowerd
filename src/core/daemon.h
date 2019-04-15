@@ -84,6 +84,8 @@ private:
     std::shared_ptr<Lock> const lock;
     std::shared_ptr<NotificationService> const notification_service;
     std::shared_ptr<PowerButton> const power_button;
+    std::shared_ptr<SilverButton> const silver_button;
+    std::shared_ptr<Audio> const audio;
     std::shared_ptr<PowerSource> const power_source;
     std::shared_ptr<ProximitySensor> const proximity_sensor;
     std::shared_ptr<SessionTracker> const session_tracker;

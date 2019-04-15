@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Canonical Ltd.
+ * Copyright © 2019 Gemian
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3,
@@ -13,34 +13,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authored by: Alexandros Frantzis <alexandros.frantzis@canonical.com>
+ * Authored by: Adam Boardman
  */
 
 #pragma once
 
-#include "src/core/performance_booster.h"
-
-#include <ubuntu/hardware/booster.h>
+#include "src/core/call_control.h"
+#include "dbus_connection_handle.h"
+#include "dbus_event_loop.h"
+#include "fd.h"
+#include "event_loop.h"
 
 #include <memory>
 
 namespace repowerd
 {
 
-class Log;
+    class Log;
 
-class UbuntuPerformanceBooster : public PerformanceBooster
-{
-public:
-    UbuntuPerformanceBooster(std::shared_ptr<Log> const& log);
-    ~UbuntuPerformanceBooster();
+    class OfonoCallControl : public CallControl
+    {
+    public:
+        OfonoCallControl(
+                std::shared_ptr<Log> const& log,
+                std::string const& dbus_bus_address);
 
-    void enable_interactive_mode() override;
-    void disable_interactive_mode() override;
+        void hang_up_and_accept_call() override;
 
-private:
-    std::shared_ptr<Log> const log;
-    std::unique_ptr<UHardwareBooster,void(*)(UHardwareBooster*)> booster;
-};
+    private:
+        std::shared_ptr<Log> const log;
+        DBusConnectionHandle dbus_connection;
+    };
 
 }

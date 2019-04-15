@@ -22,6 +22,7 @@
 #include "power_button.h"
 #include "power_action.h"
 #include "power_supply.h"
+#include "voice_call_service.h"
 
 #include <chrono>
 
@@ -37,6 +38,7 @@ public:
 
     virtual void handle_active_call() = 0;
     virtual void handle_no_active_call() = 0;
+    virtual void handle_update_call_state(OfonoCallState state) = 0;
 
     virtual void handle_enable_inactivity_timeout() = 0;
     virtual void handle_disable_inactivity_timeout() = 0;
@@ -59,6 +61,15 @@ public:
 
     virtual void handle_power_button_press(PowerButtonState) = 0;
     virtual void handle_power_button_release() = 0;
+
+    virtual void handle_silver_button_press() = 0;
+    virtual void handle_silver_button_release() = 0;
+
+    virtual void handle_audio_headphone_cs_left_up() = 0;
+    virtual void handle_audio_headphone_cs_right_up() = 0;
+
+    virtual void handle_audio_keep_alive_idle() = 0;
+    virtual void handle_audio_keep_alive_active() = 0;
 
     virtual void handle_power_source_change() = 0;
     virtual void handle_power_source_critical() = 0;

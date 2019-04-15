@@ -27,6 +27,7 @@ namespace
 {
 char const* const log_tag = "OfonoVoiceCallService";
 auto const null_handler = []{};
+auto const null_handler1 = [](auto){};
 char const* const ofono_manager_interface = "org.ofono.Manager";
 char const* const ofono_radio_settings_interface = "org.ofono.RadioSettings";
 char const* const ofono_service_name = "org.ofono";
@@ -204,6 +205,15 @@ repowerd::HandlerRegistration repowerd::OfonoVoiceCallService::register_no_activ
             [this] { this->no_active_call_handler = null_handler; }};
 }
 
+repowerd::HandlerRegistration repowerd::OfonoVoiceCallService::register_update_call_state_handler(
+        UpdateCallStateHandler const& handler)
+{
+    return EventLoopHandlerRegistration{
+        dbus_event_loop,
+            [this, &handler] { this->update_call_state_handler = handler; },
+            [this] { this->update_call_state_handler = null_handler1; }};
+}
+
 void repowerd::OfonoVoiceCallService::set_low_power_mode()
 {
     dbus_event_loop.enqueue([this] { set_fast_dormancy(true); });
@@ -344,6 +354,8 @@ void repowerd::OfonoVoiceCallService::update_call_state(
         if (!is_any_call_active())
             no_active_call_handler();
     }
+
+    update_call_state_handler(call_state);
 }
 
 bool repowerd::OfonoVoiceCallService::is_any_call_active()

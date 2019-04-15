@@ -20,23 +20,15 @@
 
 #include "src/core/log.h"
 
-#define U_HARDWARE_BOOSTER_SCENARIO_USER_INTERACTION 1
-
 namespace
 {
 
 char const* const log_tag = "UbuntuPerformanceBooster";
 
-    void u_hardware_booster_unref(void *pVoid);
-
-    void u_hardware_booster_deleter(UHardwareBooster* booster)
+void u_hardware_booster_deleter(UHardwareBooster* booster)
 {
     if (booster) u_hardware_booster_unref(booster);
 }
-
-    void u_hardware_booster_unref(void *) {
-
-    }
 
 }
 
@@ -67,16 +59,4 @@ void repowerd::UbuntuPerformanceBooster::disable_interactive_mode()
     u_hardware_booster_disable_scenario(
         booster.get(),
         U_HARDWARE_BOOSTER_SCENARIO_USER_INTERACTION);
-}
-
-void *repowerd::UbuntuPerformanceBooster::u_hardware_booster_new() {
-    return nullptr;
-}
-
-void repowerd::UbuntuPerformanceBooster::u_hardware_booster_enable_scenario(void *, int) {
-
-}
-
-void repowerd::UbuntuPerformanceBooster::u_hardware_booster_disable_scenario(void *, int) {
-
 }

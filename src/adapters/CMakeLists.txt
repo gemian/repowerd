@@ -40,6 +40,7 @@ set(
     monotone_spline.cpp
     null_log.cpp
     ofono_voice_call_service.cpp
+    ofono_call_control.cpp
     path.cpp
     real_chrono.cpp
     real_filesystem.cpp
@@ -53,6 +54,8 @@ set(
     ubuntu_proximity_sensor.cpp
     unity_display.cpp
     unity_power_button.cpp
+    gemian_silver_button.cpp
+    gemian_audio.cpp
     unity_screen_service.cpp
     unity_user_activity.cpp
     upower_power_source_and_lid.cpp

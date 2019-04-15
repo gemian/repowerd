@@ -35,6 +35,12 @@ rt::FakeStateMachineOptions::power_button_long_press_timeout() const
 }
 
 std::chrono::milliseconds
+rt::FakeStateMachineOptions::keep_alive_alarm_timeout() const
+{
+    return 61s;
+}
+
+std::chrono::milliseconds
 rt::FakeStateMachineOptions::user_inactivity_normal_display_dim_duration() const
 {
     return 10s;

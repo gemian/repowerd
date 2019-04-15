@@ -38,6 +38,8 @@ class ModemPowerControl;
 class NotificationService;
 class PerformanceBooster;
 class PowerButton;
+class SilverButton;
+class Audio;
 class PowerButtonEventSink;
 class PowerSource;
 class ProximitySensor;
@@ -48,6 +50,7 @@ class SystemPowerControl;
 class Timer;
 class UserActivity;
 class VoiceCallService;
+class CallControl;
 
 class DaemonConfig
 {
@@ -68,6 +71,8 @@ public:
     virtual std::shared_ptr<NotificationService> the_notification_service() = 0;
     virtual std::shared_ptr<PerformanceBooster> the_performance_booster() = 0;
     virtual std::shared_ptr<PowerButton> the_power_button() = 0;
+    virtual std::shared_ptr<SilverButton> the_silver_button() = 0;
+    virtual std::shared_ptr<Audio> the_audio() = 0;
     virtual std::shared_ptr<PowerButtonEventSink> the_power_button_event_sink() = 0;
     virtual std::shared_ptr<PowerSource> the_power_source() = 0;
     virtual std::shared_ptr<ProximitySensor> the_proximity_sensor() = 0;
@@ -78,6 +83,7 @@ public:
     virtual std::shared_ptr<Timer> the_timer() = 0;
     virtual std::shared_ptr<UserActivity> the_user_activity() = 0;
     virtual std::shared_ptr<VoiceCallService> the_voice_call_service() = 0;
+    virtual std::shared_ptr<CallControl> the_call_control() = 0;
 
 protected:
     DaemonConfig() = default;

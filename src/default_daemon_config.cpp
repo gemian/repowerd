@@ -33,6 +33,7 @@
 #include "adapters/logind_system_power_control.h"
 #include "adapters/null_log.h"
 #include "adapters/null_exec.h"
+#include "adapters/ofono_call_control.h"
 #include "adapters/ofono_voice_call_service.h"
 #include "adapters/real_chrono.h"
 #include "adapters/real_filesystem.h"
@@ -49,6 +50,8 @@
 #include "adapters/x11_display.h"
 #include "adapters/x11_lock.h"
 #include "adapters/unity_power_button.h"
+#include "adapters/gemian_silver_button.h"
+#include "adapters/gemian_audio.h"
 #include "adapters/unity_screen_service.h"
 #include "adapters/unity_user_activity.h"
 #include "adapters/upower_power_source_and_lid.h"
@@ -71,6 +74,11 @@ struct NullBrightnessControl : repowerd::BrightnessControl
     void set_normal_brightness_value(double)  override {}
     void set_off_brightness() override {}
     double get_normal_brightness_value() override { return 0; }
+};
+
+struct NullCallControl : repowerd::CallControl
+{
+    void hang_up_and_accept_call() override {}
 };
 
 struct NullBrightnessNotification : repowerd::BrightnessNotification
@@ -173,6 +181,18 @@ repowerd::DefaultDaemonConfig::the_brightness_control()
     return brightness_control;
 }
 
+std::shared_ptr<repowerd::CallControl>
+repowerd::DefaultDaemonConfig::the_call_control()
+{
+    if (!call_control) {
+        call_control = std::make_shared<OfonoCallControl>(
+            the_log(),
+            the_dbus_bus_address());
+    }
+
+    return call_control;
+}
+
 std::shared_ptr<repowerd::ClientRequests>
 repowerd::DefaultDaemonConfig::the_client_requests()
 {
@@ -239,6 +259,18 @@ std::shared_ptr<repowerd::PowerButton>
 repowerd::DefaultDaemonConfig::the_power_button()
 {
     return the_unity_power_button();
+}
+
+std::shared_ptr<repowerd::SilverButton>
+repowerd::DefaultDaemonConfig::the_silver_button()
+{
+    return the_gemian_silver_button();
+}
+
+std::shared_ptr<repowerd::Audio>
+repowerd::DefaultDaemonConfig::the_audio()
+{
+    return the_gemian_audio();
 }
 
 std::shared_ptr<repowerd::PowerButtonEventSink>
@@ -627,6 +659,22 @@ repowerd::DefaultDaemonConfig::the_unity_power_button()
     if (!unity_power_button)
         unity_power_button = std::make_shared<UnityPowerButton>(the_dbus_bus_address());
     return unity_power_button;
+}
+
+std::shared_ptr<repowerd::GemianSilverButton>
+repowerd::DefaultDaemonConfig::the_gemian_silver_button()
+{
+    if (!gemian_silver_button)
+        gemian_silver_button = std::make_shared<GemianSilverButton>(the_dbus_bus_address());
+    return gemian_silver_button;
+}
+
+std::shared_ptr<repowerd::GemianAudio>
+repowerd::DefaultDaemonConfig::the_gemian_audio()
+{
+    if (!gemian_audio)
+        gemian_audio = std::make_shared<GemianAudio>(the_log(), the_dbus_bus_address());
+    return gemian_audio;
 }
 
 std::shared_ptr<repowerd::UPowerPowerSourceAndLid>

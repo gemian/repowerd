@@ -21,9 +21,7 @@
 #include "light_sensor.h"
 #include "event_loop.h"
 
-//#include <ubuntu/application/sensors/light.h>
-typedef void UASLightEvent;
-typedef void UASensorsLight;
+#include <ubuntu/application/sensors/light.h>
 
 namespace repowerd
 {
@@ -46,16 +44,6 @@ private:
     EventLoop event_loop;
     LightHandler handler;
     bool enabled;
-
-    void *ua_sensors_light_new();
-
-    void ua_sensors_light_set_reading_cb(void *const pVoid, void (*callback)(void *, void *), UbuntuLightSensor *pSensor);
-
-    void ua_sensors_light_enable(void *const pVoid);
-
-    void ua_sensors_light_disable(void *const pVoid);
-
-    static void uas_light_event_get_light(void *pVoid, float *pDouble);
 };
 
 }

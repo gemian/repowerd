@@ -66,6 +66,7 @@ add_executable(
     test_unique_random_pool.cpp
     test_unity_display.cpp
     test_unity_power_button.cpp
+    test_gemian_silver_button.cpp
     test_unity_screen_service.cpp
     test_unity_user_activity.cpp
     test_upower_power_source_and_lid.cpp
