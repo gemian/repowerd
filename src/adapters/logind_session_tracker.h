@@ -33,6 +33,8 @@ namespace repowerd
 {
 class Log;
 class DeviceQuirks;
+class Lock;
+class SessionBusProvider;
 
 class LogindSessionTracker : public SessionTracker
 {
@@ -41,7 +43,9 @@ public:
         std::shared_ptr<Filesystem> const& filesystem,
         std::shared_ptr<Log> const& log,
         DeviceQuirks const& device_quirks,
-        std::string const& dbus_bus_address);
+        std::string const& dbus_bus_address,
+        std::shared_ptr<Lock> const& lock,
+        std::shared_ptr<SessionBusProvider> const& dbus_session_bus_provider);
 
     void start_processing() override;
 
@@ -79,6 +83,8 @@ private:
     bool const ignore_session_deactivation;
 
     DBusConnectionHandle dbus_connection;
+    std::shared_ptr<Lock> lock;
+    std::shared_ptr<SessionBusProvider> dbus_session_bus_provider;
     DBusEventLoop dbus_event_loop;
     HandlerRegistration dbus_seat_signal_handler_registration;
     HandlerRegistration dbus_manager_signal_handler_registration;
@@ -93,7 +99,7 @@ private:
     };
     std::unordered_map<std::string,SessionInfo> tracked_sessions;
     std::string active_session_id;
-    uid_t active_user_id;
+    uid_t active_user_id{};
 };
 
 }

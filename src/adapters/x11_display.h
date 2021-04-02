@@ -23,8 +23,10 @@
 #include "src/core/display_power_control.h"
 #include "src/core/display_information.h"
 #include "src/core/handler_registration.h"
+#include "src/core/session_bus_provider.h"
 #include "src/core/log.h"
 #include "src/core/exec.h"
+#include "src/core/lock.h"
 
 #include "dbus_connection_handle.h"
 #include "dbus_event_loop.h"
@@ -34,15 +36,15 @@
 
 namespace repowerd
 {
-    class Log;
-
     class X11Display : public DisplayPowerControl, public DisplayInformation
     {
     public:
         X11Display(
                 std::shared_ptr<Log> const& log,
                 std::shared_ptr<Exec> const& exec,
-                std::string const& dbus_bus_address);
+                std::shared_ptr<Lock> const& lock,
+                std::string const& dbus_bus_address,
+                std::shared_ptr<SessionBusProvider> const& dbus_session_bus_provider);
 
         // From DisplayPowerControl
         void turn_on(DisplayPowerControlFilter filter) override;
@@ -54,6 +56,7 @@ namespace repowerd
         // For testing
         std::string active_username();
         void set_active_username(const char *string);
+        void set_active_uid(guint32 uid);
 
     private:
         void handle_dbus_signal(
@@ -69,7 +72,9 @@ namespace repowerd
 
         std::shared_ptr<Log> const log;
         std::shared_ptr<Exec> const exec;
+        std::shared_ptr<Lock> const lock;
         DBusConnectionHandle dbus_connection;
+        std::shared_ptr<SessionBusProvider> dbus_session_bus_provider;
         DBusEventLoop dbus_event_loop;
         HandlerRegistration dbus_signal_handler_registration;
         std::atomic<bool> has_active_external_displays_;
@@ -78,6 +83,7 @@ namespace repowerd
         std::pair<std::string, std::string> dbus_get_active_session();
 
         std::string dbus_get_session_user_name(const std::string &session_path);
+        guint32 dbus_get_session_user_id(std::string const& session_path);
 
         void dbus_query_active_session();
     };

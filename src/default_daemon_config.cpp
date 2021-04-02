@@ -18,6 +18,7 @@
 
 #include "default_daemon_config.h"
 #include "core/default_state_machine_factory.h"
+#include "core/session_bus_provider.h"
 
 #include "adapters/android_autobrightness_algorithm.h"
 #include "adapters/android_backlight.h"
@@ -312,7 +313,12 @@ repowerd::DefaultDaemonConfig::the_session_tracker()
     if (!session_tracker)
     {
         session_tracker = std::make_shared<LogindSessionTracker>(
-            the_filesystem(), the_log(), *the_device_quirks(), the_dbus_bus_address());
+            the_filesystem(),
+            the_log(),
+            *the_device_quirks(),
+            the_dbus_bus_address(),
+            the_lock(),
+            the_dbus_session_bus_provider());
     }
 
     return session_tracker;
@@ -477,6 +483,15 @@ std::string repowerd::DefaultDaemonConfig::the_dbus_bus_address()
     return address ? address.get() : std::string{};
 }
 
+std::shared_ptr<repowerd::SessionBusProvider>
+repowerd::DefaultDaemonConfig::the_dbus_session_bus_provider()
+{
+    if (!session_bus_provider)
+        session_bus_provider = std::make_shared<repowerd::SessionBusProvider>();
+
+    return session_bus_provider;
+}
+
 std::shared_ptr<repowerd::DeviceConfig>
 repowerd::DefaultDaemonConfig::the_device_config()
 {
@@ -619,7 +634,9 @@ repowerd::DefaultDaemonConfig::the_x11_display()
         x11_display = std::make_shared<X11Display>(
             the_log(),
             the_exec(),
-            the_dbus_bus_address());
+            the_lock(),
+            the_dbus_bus_address(),
+            the_dbus_session_bus_provider());
     }
     return x11_display;
 }
@@ -631,7 +648,7 @@ repowerd::DefaultDaemonConfig::the_x11_lock()
     {
         x11_lock = std::make_shared<X11Lock>(
             the_log(),
-            the_dbus_bus_address());
+            the_dbus_session_bus_provider());
     }
     return x11_lock;
 }

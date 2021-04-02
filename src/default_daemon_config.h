@@ -42,6 +42,7 @@ class X11Display;
 class X11Lock;
 class UPowerPowerSourceAndLid;
 class WakeupService;
+class SessionBusProvider;
 
 class DefaultDaemonConfig : public DaemonConfig
 {
@@ -79,6 +80,7 @@ public:
     std::shared_ptr<BrightnessNotification> the_brightness_notification();
     std::shared_ptr<Chrono> the_chrono();
     std::string the_dbus_bus_address();
+    std::shared_ptr<SessionBusProvider> the_dbus_session_bus_provider();
     std::shared_ptr<DeviceConfig> the_device_config();
     std::shared_ptr<DeviceQuirks> the_device_quirks();
     std::shared_ptr<Filesystem> the_filesystem();
@@ -104,6 +106,7 @@ private:
     std::shared_ptr<BrightnessNotification> brightness_notification;
     std::shared_ptr<Chrono> chrono;
     std::shared_ptr<ClientSettings> client_settings;
+    std::shared_ptr<SessionBusProvider> session_bus_provider;
     std::shared_ptr<DeviceConfig> device_config;
     std::shared_ptr<DeviceQuirks> device_quirks;
     std::shared_ptr<Filesystem> filesystem;

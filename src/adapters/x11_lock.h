@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "src/core/session_bus_provider.h"
 #include "src/core/lock.h"
 #include "src/core/log.h"
 
@@ -33,7 +34,7 @@ namespace repowerd
     {
     public:
         X11Lock(std::shared_ptr<Log> const& log,
-                std::string const& dbus_bus_address);
+                std::shared_ptr<SessionBusProvider> const& dbus_session_bus_provider);
 
         void start_processing() override;
         HandlerRegistration register_lock_handler(
@@ -49,7 +50,7 @@ namespace repowerd
                 GVariant* parameters);
 
         std::shared_ptr<Log> const log;
-        DBusConnectionHandle dbus_connection;
+        std::shared_ptr<SessionBusProvider> dbus_session_bus_provider;
         DBusEventLoop dbus_event_loop;
         HandlerRegistration dbus_signal_handler_registration;
 

@@ -21,9 +21,16 @@ set(
     default_state_machine_factory.cpp
     handler_registration.cpp
     state_event_adapter.cpp
+    session_bus_provider.cpp
 )
 
 add_library(
     repowerd-core STATIC
     ${REPOWERD_CORE_SRCS}
+)
+
+target_include_directories(
+    repowerd-core PUBLIC
+    ${GIO_INCLUDE_DIRS}
+    ${GIO_UNIX_INCLUDE_DIRS}
 )

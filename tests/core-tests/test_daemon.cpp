@@ -336,7 +336,6 @@ TEST_F(ADaemon, registers_starts_and_unregisters_lock_handler)
 {
     InSequence s;
     EXPECT_CALL(config.the_fake_lock()->mock, register_lock_handler(_));
-    EXPECT_CALL(config.the_fake_lock()->mock, start_processing());
     start_daemon();
     testing::Mock::VerifyAndClearExpectations(config.the_fake_lock().get());
 

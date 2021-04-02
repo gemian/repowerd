@@ -20,6 +20,7 @@
 
 #include "x11_display.h"
 #include "scoped_g_error.h"
+#include "x11_lock.h"
 
 #include <gio/gio.h>
 #include <pwd.h>
@@ -59,10 +60,14 @@ namespace
 repowerd::X11Display::X11Display(
         std::shared_ptr<Log> const& log,
         std::shared_ptr<Exec> const& exec,
-        std::string const& dbus_bus_address)
+        std::shared_ptr<Lock> const& lock,
+        std::string const& dbus_bus_address,
+		std::shared_ptr<SessionBusProvider> const& dbus_session_bus_provider)
         : log{log},
           exec{exec},
+          lock{lock},
           dbus_connection{dbus_bus_address},
+          dbus_session_bus_provider{dbus_session_bus_provider},
           dbus_event_loop{"Display"},
           has_active_external_displays_{false},
           active_username_{}
@@ -106,10 +111,25 @@ void repowerd::X11Display::turn_on(DisplayPowerControlFilter filter)
 void repowerd::X11Display::turn_off(DisplayPowerControlFilter filter, bool lid_closed)
 {
     auto const filter_str = filter_to_str(filter);
+    DBusConnectionHandle dbus_session_connection{dbus_session_bus_provider->Get()};
+
+    g_dbus_connection_call(
+            dbus_session_connection,
+            "org.freedesktop.ScreenSaver",
+            "/org/freedesktop/ScreenSaver",
+            "org.freedesktop.ScreenSaver",
+            "Lock",
+            nullptr,
+            nullptr,
+            G_DBUS_CALL_FLAGS_NONE,
+            -1,
+            nullptr,
+            nullptr,
+            nullptr);
 
     log->log(log_tag, "turn_off(%s)", filter_str.c_str());
 
-    std::string off_cmd = std::string("/bin/su - ")+active_username_;
+    std::string off_cmd = std::string("/bin/su - ") + active_username_;
     if (lid_closed) {
         off_cmd += " -c \"DISPLAY=:0 xrandr --output hwcomposer --off; DISPLAY=:0 xset dpms force off\"";
     } else {
@@ -236,6 +256,8 @@ void repowerd::X11Display::dbus_query_active_session()
     if (!active_session.first.empty())
     {
         active_username_ = dbus_get_session_user_name(active_session.second);
+        set_active_uid(dbus_get_session_user_id(active_session.second));
+        lock->start_processing();
     }
 }
 
@@ -262,7 +284,7 @@ std::pair<std::string,std::string> repowerd::X11Display::dbus_get_active_session
     {
         log->log(log_tag, "dbus_get_active_session() failed to get ActiveSession: %s",
                  error.message_str().c_str());
-        return {"",""};
+        return {"", ""};
     }
 
     GVariant* active_session_variant{nullptr};
@@ -321,7 +343,52 @@ std::string repowerd::X11Display::dbus_get_session_user_name(std::string const& 
     return session_name;
 }
 
+guint32 repowerd::X11Display::dbus_get_session_user_id(std::string const& session_path)
+{
+    int constexpr timeout_default = -1;
+    auto constexpr null_cancellable = nullptr;
+    ScopedGError error;
+
+    auto const result = g_dbus_connection_call_sync(
+            dbus_connection,
+            dbus_logind_name,
+            session_path.c_str(),
+            "org.freedesktop.DBus.Properties",
+            "Get",
+            g_variant_new("(ss)", dbus_session_interface, "User"),
+            G_VARIANT_TYPE("(v)"),
+            G_DBUS_CALL_FLAGS_NONE,
+            timeout_default,
+            null_cancellable,
+            error);
+
+    if (!result)
+    {
+        log->log(log_tag, "dbus_get_session_type() failed to get session Name: %s",
+                 error.message_str().c_str());
+        return 0;
+    }
+
+    GVariant *user_variant{nullptr};
+    g_variant_get(result, "(v)", &user_variant);
+
+    guint32 user_id{0};
+    char const* user_path{""};
+    g_variant_get(user_variant, "(uo)", &user_id, &user_path);
+    log->log(log_tag, "User Id: %d, User Path: %s",user_id, user_path);
+
+    g_variant_unref(user_variant);
+    g_variant_unref(result);
+
+    return user_id;
+}
+
 void repowerd::X11Display::set_active_username(const char *string)
 {
     active_username_ = string;
+}
+
+void repowerd::X11Display::set_active_uid(const guint32 uid)
+{
+    dbus_session_bus_provider->UpdateSessionBus(uid);
 }

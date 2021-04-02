@@ -24,18 +24,17 @@
 namespace
 {
     auto const null_handler = [](repowerd::LockState){};
-    char const* const x11_lock_bus_name = "org.thinkglobally.Gemian.Lock";
-    char const* const x11_lock_object_path = "/org/thinkglobally/Gemian/Lock";
-    char const* const x11_lock_interface_name = "org.thinkglobally.Gemian.Lock";
+    char const* const x11_lock_bus_name = "org.freedesktop.ScreenSaver";
+    char const* const x11_lock_object_path = "/org/freedesktop/ScreenSaver";
+    char const* const x11_lock_interface_name = "org.freedesktop.ScreenSaver";
     char const* const log_tag = "X11Lock";
-
 }
 
 repowerd::X11Lock::X11Lock(
         std::shared_ptr<Log> const& log,
-        std::string const& dbus_bus_address)
+        std::shared_ptr<SessionBusProvider> const& dbus_session_bus_provider)
         : log{log},
-          dbus_connection{dbus_bus_address},
+          dbus_session_bus_provider{dbus_session_bus_provider},
           dbus_event_loop{"Lock"},
           lock_handler{null_handler}
 {
@@ -43,9 +42,11 @@ repowerd::X11Lock::X11Lock(
 
 void repowerd::X11Lock::start_processing()
 {
+    DBusConnectionHandle dbus_session_connection{dbus_session_bus_provider->Get()};
+
     dbus_signal_handler_registration = dbus_event_loop.register_signal_handler(
-        dbus_connection,
-        x11_lock_bus_name,
+        dbus_session_connection,
+        nullptr, //x11_lock_bus_name
         x11_lock_interface_name,
         nullptr,
         x11_lock_object_path,
@@ -78,12 +79,21 @@ void repowerd::X11Lock::handle_dbus_signal(
     gchar const* /*object_path*/,
     gchar const* /*interface_name*/,
     gchar const* signal_name_cstr,
-    GVariant* /*parameters*/)
+    GVariant* parameters)
 {
     std::string const signal_name{signal_name_cstr ? signal_name_cstr : ""};
+    log->log(log_tag, "signal_name(%s)", signal_name.c_str());
 
-    if (signal_name == "Active")
-        lock_handler(repowerd::LockState::active);
-    else if (signal_name == "Inactive")
-        lock_handler(repowerd::LockState::inactive);
+    if (signal_name == "ActiveChanged") {
+        gboolean active{false};
+        g_variant_get(parameters, "(b)", &active);
+
+        log->log(log_tag, "ActiveChanged(%d)", active);
+
+        if (active) {
+            lock_handler(repowerd::LockState::active);
+        } else {
+            lock_handler(repowerd::LockState::inactive);
+        }
+    }
 }

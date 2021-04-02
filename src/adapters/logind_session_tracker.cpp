@@ -22,6 +22,8 @@
 #include "scoped_g_error.h"
 
 #include "src/core/log.h"
+#include "src/core/session_bus_provider.h"
+#include "src/core/lock.h"
 
 #include <algorithm>
 
@@ -79,11 +81,15 @@ repowerd::LogindSessionTracker::LogindSessionTracker(
     std::shared_ptr<Filesystem> const& filesystem,
     std::shared_ptr<Log> const& log,
     DeviceQuirks const& quirks,
-    std::string const& dbus_bus_address)
+    std::string const& dbus_bus_address,
+    std::shared_ptr<Lock> const& lock,
+    std::shared_ptr<SessionBusProvider> const& dbus_session_bus_provider)
     : filesystem{filesystem},
       log{log},
       ignore_session_deactivation{quirks.ignore_session_deactivation()},
       dbus_connection{dbus_bus_address},
+      lock{lock},
+      dbus_session_bus_provider{dbus_session_bus_provider},
       dbus_event_loop{"Logind"},
       active_session_changed_handler{null_arg2_handler},
       session_removed_handler{null_arg1_handler},
@@ -173,6 +179,11 @@ std::string repowerd::LogindSessionTracker::session_for_pid(pid_t pid)
                 {
                     ret_session_id = active_session_id;
                     active_user_id = active_session_uid;
+                }
+                if (active_user_id > 0)
+                {
+                    dbus_session_bus_provider->UpdateSessionBus(active_user_id);
+                    lock->start_processing();
                 }
             }
         }).get();

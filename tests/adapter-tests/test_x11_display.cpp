@@ -155,10 +155,10 @@ private:
 
 struct AX11Display : testing::Test
 {
-    void wait_for_have_environment(repowerd::X11Display& x11_display, std::string value)
+    void wait_for_have_environment(repowerd::X11Display& _x11_display, std::string value)
     {
         auto const result = rt::spin_wait_for_condition_or_timeout(
-            [&] { return x11_display.active_username() == value; },
+            [&] { return _x11_display.active_username() == value; },
                 default_timeout);
         if (!result)
         {
@@ -167,13 +167,15 @@ struct AX11Display : testing::Test
         }
     }
 
+    repowerd::SessionBusProvider bus_provider;
     rt::DBusBus bus;
     rt::FakeLog fake_log;
     rt::FakeExec fake_exec;
     repowerd::X11Display x11_display{
         rt::fake_shared(fake_log),
         rt::fake_shared(fake_exec),
-        bus.address()};
+        bus.address(),
+        rt::fake_shared(bus_provider)};
 
     std::chrono::seconds const default_timeout{3};
 };
@@ -192,6 +194,7 @@ TEST_F(AX11Display, turn_on_request)
 TEST_F(AX11Display, turn_off_lid_open_request)
 {
     x11_display.set_active_username("gemini");
+    x11_display.set_active_uid(100000);
     x11_display.turn_off(repowerd::DisplayPowerControlFilter::all, false);
 
     EXPECT_TRUE(fake_log.contains_line({"turn_off"}));
@@ -201,6 +204,7 @@ TEST_F(AX11Display, turn_off_lid_open_request)
 TEST_F(AX11Display, turn_off_lid_closed_request)
 {
     x11_display.set_active_username("gemini");
+    x11_display.set_active_uid(100000);
     x11_display.turn_off(repowerd::DisplayPowerControlFilter::all, true);
 
     EXPECT_TRUE(fake_log.contains_line({"turn_off"}));

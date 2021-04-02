@@ -26,6 +26,8 @@
 #include "wait_condition.h"
 
 #include "src/adapters/logind_session_tracker.h"
+#include "src/adapters/x11_lock.h"
+#include "src/core/session_bus_provider.h"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -67,7 +69,9 @@ struct ALogindSessionTracker : testing::Test
                 rt::fake_shared(fake_filesystem),
                 rt::fake_shared(fake_log),
                 fake_device_quirks,
-                bus.address());
+                bus.address(),
+                rt::fake_shared(x11_lock),
+                rt::fake_shared(bus_provider));
 
         registrations.push_back(
             logind_session_tracker->register_active_session_changed_handler(
@@ -111,7 +115,7 @@ struct ALogindSessionTracker : testing::Test
 
     uid_t session_uid(int i)
     {
-        return 1000 + i;
+        return 100000 + i;
     }
 
     void associate_pid_with_uid(pid_t pid, uid_t uid)
@@ -194,11 +198,13 @@ struct ALogindSessionTracker : testing::Test
     };
     testing::NiceMock<MockHandlers> mock_handlers;
 
+    repowerd::SessionBusProvider bus_provider;
     rt::DBusBus bus;
     rt::FakeLog fake_log;
     rt::FakeFilesystem fake_filesystem;
     std::unique_ptr<repowerd::LogindSessionTracker> logind_session_tracker;
     rt::FakeLogind fake_logind{bus.address()};
+    repowerd::X11Lock x11_lock{rt::fake_shared(fake_log), rt::fake_shared(bus_provider)};
     std::vector<repowerd::HandlerRegistration> registrations;
 
     std::chrono::seconds const default_timeout{3};

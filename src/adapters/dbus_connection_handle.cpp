@@ -24,12 +24,17 @@
 repowerd::DBusConnectionHandle::DBusConnectionHandle(std::string const& address)
 {
     repowerd::ScopedGError error;
+    bool auth_client = false;
+    if (address.find("/user/") == std::string::npos) {
+        auth_client = true;
+    }
+    auto flags = GDBusConnectionFlags(
+            (auth_client ? G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT|G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION : G_DBUS_CONNECTION_FLAGS_NONE)
+    );
 
     connection = g_dbus_connection_new_for_address_sync(
         address.c_str(),
-        GDBusConnectionFlags(
-            G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION |
-            G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT),
+        flags,
         nullptr,
         nullptr,
         error);

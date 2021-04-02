@@ -507,7 +507,6 @@ void repowerd::Daemon::start_event_processing()
     client_requests->start_processing();
     client_settings->start_processing();
     lid->start_processing();
-    lock->start_processing();
     notification_service->start_processing();
     power_button->start_processing();
     silver_button->start_processing();
