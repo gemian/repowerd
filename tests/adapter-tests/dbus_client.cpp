@@ -157,45 +157,45 @@ std::string rt::DBusClient::DBusClient::unique_name()
 }
 
 void rt::DBusClient::emit_signal(
-    char const* interface, char const* name, GVariant* args)
+    char const* _interface, char const* name, GVariant* args)
 {
     g_dbus_connection_emit_signal(
         connection,
         nullptr,
         path.c_str(),
-        interface,
+        _interface,
         name,
         args,
         nullptr);
 }
 
 void rt::DBusClient::emit_signal_full(
-    char const* path, char const* interface, char const* name, GVariant* args)
+    char const* _path, char const* _interface, char const* name, GVariant* args)
 {
     g_dbus_connection_emit_signal(
         connection,
         nullptr,
-        path,
-        interface,
+        _path,
+        _interface,
         name,
         args,
         nullptr);
 }
 
 void rt::DBusClient::invoke_async(
-    DBusAsyncReply* reply, char const* interface, char const* method, GVariant* args)
+    DBusAsyncReply* reply, char const* _interface, char const* method, GVariant* args)
 {
     static int const timeout_ms = 5000;
     reply->set_pending();
 
     event_loop.enqueue(
-        [this, reply, interface, method, args]
+        [this, reply, _interface, method, args]
         {
             repowerd::DBusMessageHandle msg{
                 g_dbus_message_new_method_call(
                     destination.c_str(),
                     path.c_str(),
-                    interface,
+                    _interface,
                     method),
                 args};
 

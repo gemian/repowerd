@@ -155,10 +155,10 @@ private:
 
 struct AX11Display : testing::Test
 {
-    void wait_for_have_environment(repowerd::X11Display& x11_display, std::string value)
+    void wait_for_have_environment(repowerd::X11Display& _x11_display, std::string value)
     {
         auto const result = rt::spin_wait_for_condition_or_timeout(
-            [&] { return x11_display.active_username() == value; },
+            [&] { return _x11_display.active_username() == value; },
                 default_timeout);
         if (!result)
         {

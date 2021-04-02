@@ -93,7 +93,7 @@ private:
     };
     std::unordered_map<std::string,SessionInfo> tracked_sessions;
     std::string active_session_id;
-    uid_t active_user_id;
+    uid_t active_user_id{};
 };
 
 }

@@ -262,7 +262,7 @@ std::pair<std::string,std::string> repowerd::X11Display::dbus_get_active_session
     {
         log->log(log_tag, "dbus_get_active_session() failed to get ActiveSession: %s",
                  error.message_str().c_str());
-        return {"",""};
+        return {"", ""};
     }
 
     GVariant* active_session_variant{nullptr};
