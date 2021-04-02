@@ -195,7 +195,7 @@ TEST_F(AX11Display, turn_off_lid_open_request)
     x11_display.turn_off(repowerd::DisplayPowerControlFilter::all, false);
 
     EXPECT_TRUE(fake_log.contains_line({"turn_off"}));
-    EXPECT_TRUE(fake_exec.contains_line({"/bin/su - gemini -c \"DISPLAY=:0 xset dpms force off\""}));
+    EXPECT_TRUE(fake_exec.contains_line({"/bin/su - gemini -c \"dbus-send --session --dest=org.freedesktop.ScreenSaver --type=method_call --print-reply /org/freedesktop/ScreenSaver org.freedesktop.ScreenSaver.Lock;DISPLAY=:0 xset dpms force off\""}));
 }
 
 TEST_F(AX11Display, turn_off_lid_closed_request)
@@ -204,5 +204,5 @@ TEST_F(AX11Display, turn_off_lid_closed_request)
     x11_display.turn_off(repowerd::DisplayPowerControlFilter::all, true);
 
     EXPECT_TRUE(fake_log.contains_line({"turn_off"}));
-    EXPECT_TRUE(fake_exec.contains_line({"/bin/su - gemini -c \"DISPLAY=:0 xrandr --output hwcomposer --off; DISPLAY=:0 xset dpms force off\""}));
+    EXPECT_TRUE(fake_exec.contains_line({"/bin/su - gemini -c \"dbus-send --session --dest=org.freedesktop.ScreenSaver --type=method_call --print-reply /org/freedesktop/ScreenSaver org.freedesktop.ScreenSaver.Lock;DISPLAY=:0 xrandr --output hwcomposer --off; DISPLAY=:0 xset dpms force off\""}));
 }

@@ -109,11 +109,12 @@ void repowerd::X11Display::turn_off(DisplayPowerControlFilter filter, bool lid_c
 
     log->log(log_tag, "turn_off(%s)", filter_str.c_str());
 
-    std::string off_cmd = std::string("/bin/su - ")+active_username_;
+    std::string off_cmd = std::string("/bin/su - ") + active_username_ + std::string(" -c \"");
+    off_cmd += "dbus-send --session --dest=org.freedesktop.ScreenSaver --type=method_call --print-reply /org/freedesktop/ScreenSaver org.freedesktop.ScreenSaver.Lock;";
     if (lid_closed) {
-        off_cmd += " -c \"DISPLAY=:0 xrandr --output hwcomposer --off; DISPLAY=:0 xset dpms force off\"";
+        off_cmd += "DISPLAY=:0 xrandr --output hwcomposer --off; DISPLAY=:0 xset dpms force off\"";
     } else {
-        off_cmd += " -c \"DISPLAY=:0 xset dpms force off\"";
+        off_cmd += "DISPLAY=:0 xset dpms force off\"";
     }
     int ret = exec->exec(off_cmd.c_str());
 
