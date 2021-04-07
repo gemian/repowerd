@@ -50,7 +50,7 @@ void repowerd::UnityUserActivity::start_processing()
         dbus_connection,
         dbus_user_activity_name,
         dbus_user_activity_interface,
-        "Activity",
+        nullptr,
         dbus_user_activity_path,
         [this] (
             GDBusConnection* connection,
@@ -90,5 +90,13 @@ void repowerd::UnityUserActivity::handle_dbus_signal(
         int32_t activity_type;
         g_variant_get(parameters, "(i)", &activity_type);
         user_activity_handler(user_activity_type_from_dbus_value(activity_type));
+    }
+    else if (signal_name == "UserActivityChange")
+    {
+        user_activity_handler(repowerd::UserActivityType::change_power_state);
+    }
+    else if (signal_name == "UserActivityExtend")
+    {
+        user_activity_handler(repowerd::UserActivityType::extend_power_state);
     }
 }
